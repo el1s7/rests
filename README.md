@@ -55,7 +55,6 @@ By default is `query` for GET requests and `body` for POST requests
     - **`base`**: The base URL for this API, will be prepended to each request path, default is empty.
 	- **`headers`**: The global headers to add to all requests.
 	- **`params`**: The global param values for all categories and endpoints.
-	- **`constructed`**: When not enabled, you can't initalize new category objects with `new` command, instead you can  initalize them with a `new` function, i.e `api.category.new({})` instead of `new api.category({})`.  (default: true)
 	- **`agent`**: You can use this option to set proxy if you're using node-fetch.
 ## Examples
 
@@ -94,7 +93,7 @@ const api_config = {
 	
 }
 const api = Wrape(api_config,{base: 'https://httpbin.org/anything'});
-const User = new api.user({authorization: 'login_token'}); /* You can set default params values for a category by initalizing new object */
+const User = new api.user.set({authorization: 'login_token'}); /* Initialzing with set function */
 var userInfo = await User.info({id: 1});
 var userInfo = await api.user.info({id: 1,authorization:'login_token'}) /* Without initalizing */
 
@@ -105,8 +104,8 @@ var userInfo = await api.user.info({id: 1,authorization:'login_token'}) /* Witho
 
 In the example above, we have have created a `user` category with a `info` endpoint. 
 You can call endpoint by passing an object of params, if params are invalid or required it will throw an error with the param help message.
-
-Categories can be with initalized with params that are readable by each endpoint of that category. You can also call the endpoint directly without initalization.
+You can set default params values for a category by initalizing new object with 'set' function
+Categories can be initalized by using the `set` function to store param values, the param values are readable by each endpoint of that category. You can also call the endpoint directly without initalization.
 #### Another Example
 ```javascript
 import Wrape from 'wrape';
@@ -171,7 +170,7 @@ const api = Wrape(api_configuration,{
 api.analytics.log();
 
 //Initialize User category and set the key 
-const user = new api.user({key: "Bearer ..."});
+const user = new api.user.set({key: "Bearer ..."});
 
 
 user.comment({

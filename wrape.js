@@ -8,13 +8,10 @@ function Wrape(endpoints,global_options){
 		"headers":{},
 		"params":{},
 		"agent": false, //node-fetch, able to add proxy
-		"constructed": true
 	}
 	
 	global_options = Object.assign(default_global,global_options);
 	
-	
-
 	function ajax(url, options,type) {
 		return fetch(url, options)
 			.then(async function(res){
@@ -36,32 +33,22 @@ function Wrape(endpoints,global_options){
 			});
 	}
 	
-	function emptyConstructor(){
-		return function(def_values){
+	//The set constructor
+	function newSetObject(root){
+		return (function(def_values){
 			this.def_values = def_values;
+			Object.assign(this,root);
+			
+			//Set for the current initalized object
+			var setter = (function(def_values){
+				if ((this instanceof setter)) { throw new Error("You can't initalize this object.");}
+				this.def_values = def_values;}
+				).bind(this);
+			this.set = setter;
+			
+			
 			return this;
-		}
-	}
-	function newSimulateObject(){
-		return function(def_values){
-			var nw = Object.assign({},this);
-			delete nw['new'];
-			nw._def_values = def_values;
-			return nw;
-		}
-	}
-	
-	function initalizer(){
-		//Constructor function
-		if(global_options.constructed){
-			return emptyConstructor();
-		}
-		
-		//Not a constructor function object, but it has a function key to initalize new object. (simulate 'new' command)
-		return {
-			'new': newSimulateObject()
-		}
-		
+		});
 	}
 	
 	function isNull(value){
@@ -190,33 +177,32 @@ function Wrape(endpoints,global_options){
 	function ocreater(root,tree,ne=false){
 		for(var category in tree){
 			var category_tree = tree[category];
+			
+			//Is Endpoint
 			if(category_tree.hasOwnProperty('path')){
 				var request = category_tree;
 				root._ne = true; //Not empty
 				
-				//Skip duplicate keys in main object root, but still add to prototype.
+				//Skip duplicate keys in main object root
 				if(typeof root[category] !== "undefined"){
-						console.warn(`Skipping ${category} as it confilicts with another key in the object, avoid using keys like ('name','length','caller','apply',...) because they are reserved constructor words.`);
-						if(global_options.constructed){
-							root.prototype[category] = fetcher(request);
-						}
+						console.warn(`Skipping ${category} as it confilicts with another key in the object, avoid using keys like ('set') because they are reserved constructor words.`);
 						continue;
 				}
-				
 				root[category] = fetcher(request);
-				
-				//Constructor function
-				if(global_options.constructed){
-					root.prototype[category] = root[category]
-				}
+		
 			}
+			//Is Category, recursion
 			else{
-				root[category] = ocreater(initalizer(),category_tree)
+				root[category] = ocreater({},category_tree)
 			}
 		}
-		return root._ne || ne ? root : {};
+		
+		//If it has endpoints , add the 'set' constructor function.
+		root = (root._ne) ? Object.assign(root,{'set': newSetObject(root)}) : root;
+		
+		return root;
 	}
-	return ocreater(initalizer(),endpoints,true);
+	return ocreater({},endpoints,true);
 }
 
 (function (root, factory) {
