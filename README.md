@@ -3,15 +3,16 @@
 [![npm](https://img.shields.io/npm/v/wrape)](https://www.npmjs.com/package/wrape)
 [![npm](https://img.shields.io/npm/dw/wrape)](https://www.npmjs.com/package/wrape)
 
-API wrapper to organize and simplify API & Requests — OOP-ish way.
+Easily generate API client's SDK — organize and simplify API Requests — OOP-ish way.
 
 ## Features  
 - No dependencies, using Fetch API
 - Multiple API categories & subcategories
 - Elegant parameter handling
 - Universal support, small size (2.9KB)
-
 & much more.
+
+*Todo:* Support OpenAPI JSON Object
 
 ## Installation
 `npm i wrape`
@@ -34,13 +35,14 @@ const api = Wrape(api_configuration,api_options);
   - **`enctype`**: The body encode type for *requests that have body* parameters:
 	 - `multipart/form-data` *(default)*
 	 - `application/x-www-form-urlencoded`
+	 - `application/json`
   - **`params`**: An object consisting of [Params Object](#params-object)s.
 
 #### Params Object
  - **`required`**: If the param is required or not, error will be thrown if required params are not specified.
  - **`validate`**: Regular expression to test, if doesn't pass, error will be thrown.
  - **`help`** : An error message to throw if param is not valid, or required and not specified.
- - **`format`**: A function to format the parameter value.
+ - **`formatter`**: A function to format the parameter value.
  - **`default`**: A default value when value for this param was not specified.
  - **`location`**: The location where this parameter will be in http request fields, it can be:
      - `body` the param will be encoded in body as form data *(default for POST request)*

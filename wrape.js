@@ -81,7 +81,7 @@ function Wrape(endpoints,global_options){
 		
 		
 		var allowed_param_locations = ["headers","body","query","path"];
-		var allowed_param_enctypes = ['multipart/form-data','application/x-www-form-urlencoded'];
+		var allowed_param_enctypes = ['multipart/form-data','application/x-www-form-urlencoded','application/json'];
 		request.enctype = ((request.enctype && allowed_param_enctypes.includes(request.enctype)) ? request.enctype : allowed_param_enctypes[0]);
 		
 		var def_param_locations = {
@@ -124,7 +124,17 @@ function Wrape(endpoints,global_options){
 			
 	
 			this.def_values = this.def_values || {};
-			var body =  ((request.enctype == allowed_param_enctypes[0]) ? new FormData() : new URLSearchParams());
+			var bodyTypes = {
+				'multipart/form-data': function(){return new URLSearchParams()},
+				'application/x-www-form-urlencoded': function(){ return new FormData();},
+				'application/json': function(){
+					return {
+						append: function(key,value){ return this[key] = value;},
+						toString: function(){ return JSON.stringify(this);}
+					}
+				}
+			}
+			var body = bodyTypes[request.enctype]();
 			var query = new URLSearchParams();
 			
 	
@@ -140,7 +150,7 @@ function Wrape(endpoints,global_options){
 				if(isNull(param_value)) continue;
 				
 				//Formatter function?
-				if(typeof param.format === "function"){param_value = param.format(param_value);}
+				if(typeof param.formatter === "function"){param_value = param.formatter(param_value);}
 				
 				//Validate
 				if(param.validate && !(new RegExp(param.validate).test(param_value))){ throw new Error(param.help || `The '${param_name}' field is invalid.`);}
@@ -172,9 +182,16 @@ function Wrape(endpoints,global_options){
 			if(query){
 				url = `${url}?${query}`;
 			}
-	
-			if(!isEmptyIterable(body.keys())){
+			
+			//Get Body
+			if((body.keys && !isEmptyIterable(body.keys())) || body.toString().length > 1){
 				options['body'] = ((request.enctype == allowed_param_enctypes[0]) ? body : body.toString());
+			}
+			
+			//Set content-type header, (not set for multipart/form-data because it overrides the multpart key)
+			if(options['body'] && request.enctype !== allowed_param_enctypes[0]){
+				options['headers'] = options['headers'] || {};
+				options['headers']['Content-Type'] = request.enctype;
 			}
 	
 			return ajax(url,options);
