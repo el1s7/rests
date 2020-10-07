@@ -10,6 +10,7 @@ API wrapper to organize and simplify API & Requests — OOP-ish way.
 - Multiple API categories & subcategories
 - Elegant parameter handling
 - Universal support, small size (2.9KB)
+
 & much more.
 
 ## Installation
