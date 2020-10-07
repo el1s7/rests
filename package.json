@@ -1,0 +1,27 @@
+{
+  "name": "wrape",
+  "version": "1.0.0",
+  "description": "API wrapper to organize and simplify API & Requests — OOP-ish way",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "sdk",
+    "api",
+	"wrape",
+	"wrapper",
+    "fetch",
+	"oop",
+	"object",
+    "request",
+    "model",
+    "organize"
+  ],
+  "repository": {
+			"type": "git",
+			"url": "https://github.com/elis-k/wrape"
+  },
+  "author": "Elis",
+  "license": "ISC"
+}
