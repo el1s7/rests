@@ -1,6 +1,6 @@
 ﻿{
   "name": "wrape",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "API wrapper to organize and simplify API & Requests — OOP-ish way",
   "main": "index.min.js",
   "scripts": {
@@ -23,5 +23,5 @@
 			"url": "https://github.com/elis-k/wrape"
   },
   "author": "Elis",
-  "license": "ISC"
+  "license": "MIT"
 }

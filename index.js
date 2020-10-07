@@ -1,4 +1,4 @@
-function Resify(endpoints,global_options){
+function Wrape(endpoints,global_options){
 	
 	//Parse Global Options
 	endpoints = endpoints || {};
@@ -225,8 +225,8 @@ function Resify(endpoints,global_options){
     } else if (typeof module === 'object' && module.exports) {
         module.exports = factory();
     } else {
-        root.Resify = factory();
+        root.Wrape = factory();
   }
 }(typeof self !== 'undefined' ? self : this, function () {
-    return Resify;
+    return Wrape;
 }));
