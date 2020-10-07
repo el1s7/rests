@@ -1,6 +1,6 @@
 ﻿{
   "name": "wrape",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "API wrapper to organize and simplify API & Requests — OOP-ish way",
   "main": "wrape.min.js",
   "scripts": {

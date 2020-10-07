@@ -34,21 +34,28 @@ function Wrape(endpoints,global_options){
 	}
 	
 	//The set constructor
-	function newSetObject(root){
-		return (function(def_values){
-			this.def_values = def_values;
-			Object.assign(this,root);
-			
-			//Set for the current initalized object
-			var setter = (function(def_values){
-				if ((this instanceof setter)) { throw new Error("You can't initalize this object.");}
-				this.def_values = def_values;}
-				).bind(this);
-			this.set = setter;
-			
-			
-			return this;
-		});
+	function newSetObject(root,name){
+		name = name || "Wrape";
+		var New = {
+			[name]: (function(def_values){
+				if(!(this instanceof New[name])){
+					throw new Error("You must initalize this object using 'new' command.");
+				}
+				this.def_values = def_values;
+				Object.assign(this,root);
+				
+				//Set for the current initalized object
+				var child_setter = (function(def_values){
+					if ((this instanceof child_setter)) { throw new Error("You can't initalize this object.");}
+					this.def_values = def_values;}
+					).bind(this);
+				this.set = child_setter;
+				
+				
+				return this;
+			})
+		}
+		return New[name];
 	}
 	
 	function isNull(value){
@@ -174,7 +181,7 @@ function Wrape(endpoints,global_options){
 		}
 	}
 	
-	function ocreater(root,tree,ne=false){
+	function ocreater(root,tree,name){
 		for(var category in tree){
 			var category_tree = tree[category];
 			
@@ -193,12 +200,12 @@ function Wrape(endpoints,global_options){
 			}
 			//Is Category, recursion
 			else{
-				root[category] = ocreater({},category_tree)
+				root[category] = ocreater({},category_tree,category)
 			}
 		}
 		
 		//If it has endpoints , add the 'set' constructor function.
-		root = (root._ne) ? Object.assign(root,{'set': newSetObject(root)}) : root;
+		root = (root._ne) ? Object.assign(root,{'set': newSetObject(root,name)}) : root;
 		
 		return root;
 	}
