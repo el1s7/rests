@@ -1,8 +1,8 @@
-{
+﻿{
   "name": "wrape",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "API wrapper to organize and simplify API & Requests — OOP-ish way",
-  "main": "index.js",
+  "main": "index.min.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

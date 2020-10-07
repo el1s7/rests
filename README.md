@@ -9,7 +9,7 @@ API wrapper to organize and simplify API & Requests — OOP-ish way.
 - No dependencies, using Fetch API
 - Multiple API categories & subcategories
 - Elegant parameter handling
-- Universal support, small size
+- Universal support, small size (2.9KB)
 & much more.
 
 ## Installation
@@ -23,35 +23,35 @@ import {api_configuration,api_options} from './config';
 const api = Wrape(api_configuration,api_options);
 ```
 ### API Configuration 
-- #### Categories
-   An API category is an object consisting of [Endpoint Object](#endpoint-object)s or subcategories.
 
- - #### Endpoint Object
-   - **`method`**: The request method ,GET,POST etc.
-   - **`path`**: The request path, can also contain named parameters,  check [exmaple](#another-example) below. 
-   - **`enctype`**: The body encode type for *requests that have body* parameters:
-	   - `multipart/form-data` *(default)*
-	   - `application/x-www-form-urlencoded`
-   - **`params`**: An object consisting of [Params Object](#params-object)s.
+#### Categories
+ An API category is an object consisting of [Endpoint Object](#endpoint-object)s or subcategories.
 
-- #### Params Object
+#### Endpoint Object
+  - **`method`**: The request method ,GET,POST etc.
+  - **`path`**: The request path, can also contain named parameters,  check [exmaple](#another-example) below. 
+  - **`enctype`**: The body encode type for *requests that have body* parameters:
+	 - `multipart/form-data` *(default)*
+	 - `application/x-www-form-urlencoded`
+  - **`params`**: An object consisting of [Params Object](#params-object)s.
 
-  - **`required`**: If the param is required or not, error will be thrown if required params are not specified.
-  - **`validate`**: Regular expression to test, if doesn't pass, error will be thrown.
-  - **`help`** : An error message to throw if param is not valid, or required and not specified.
-  - **`format`**: A function to format the parameter value.
-  - **`default`**: A default value when value for this param was not specified.
-  - **`location`**: The location where this parameter will be in http request fields, it can be:
-	 - `body` the param will be encoded in body as form data *(default for POST request)*
-	 - `query` the param will be URL encoded in URL query *(default for GET request)*
-	 - `headers` the param will be set in request headers
-	 - `path` the param will be set in request path, you must declare the named parameters in   path, check [exmaple](#another-example) below. 
+#### Params Object
+ - **`required`**: If the param is required or not, error will be thrown if required params are not specified.
+ - **`validate`**: Regular expression to test, if doesn't pass, error will be thrown.
+ - **`help`** : An error message to throw if param is not valid, or required and not specified.
+ - **`format`**: A function to format the parameter value.
+ - **`default`**: A default value when value for this param was not specified.
+ - **`location`**: The location where this parameter will be in http request fields, it can be:
+     - `body` the param will be encoded in body as form data *(default for POST request)*
+     - `query` the param will be URL encoded in URL query *(default for GET request)*
+     - `headers` the param will be set in request headers
+     - `path` the param will be set in request path, you must declare the named parameters in   path, check [exmaple](#another-example) below. 
 By default is `query` for GET requests and `body` for POST requests
-  - **`name`**: By default the param name is the key of the Param Object. Here you can specify another name for the param, though still the key will be used for reference when calling endpoint and passing param.
+ - **`name`**: By default the param name is the key of the Param Object. Here you can specify another name for the param, though still the key will be used for reference when calling endpoint and passing param.
 
 ### API Options
 - Global Options Object
-	- **`base`**: The base URL for this API, will be prepended to each request path, default is empty.
+    - **`base`**: The base URL for this API, will be prepended to each request path, default is empty.
 	- **`headers`**: The global headers to add to all requests.
 	- **`params`**: The global param values for all categories and endpoints.
 	- **`constructed`**: When not enabled, you can't initalize new category objects with `new` command, instead you can  initalize them with a `new` function, i.e `api.category.new({})` instead of `new api.category({})`.  (default: true)
