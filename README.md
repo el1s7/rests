@@ -10,9 +10,8 @@ Easily generate API client's SDK — organize and simplify API Requests — OOP-
 - Multiple API categories & subcategories
 - Elegant parameter handling
 - Universal support, small size (2.9KB)
-& much more.
 
-*Todo:* Support OpenAPI JSON Object
+& much more.
 
 ## Installation
 `npm i wrape`
