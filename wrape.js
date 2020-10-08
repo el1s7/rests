@@ -99,8 +99,8 @@ function Wrape(endpoints,global_options){
 			}
 			
 			
-			request_params = Object.keys(request.params);
-			argument_params = Array.from(arguments);
+			var request_params = Object.keys(request.params);
+			var argument_params = Array.from(arguments);
 			
 			//Parse the params object
 			//Support passing parameters like arguments, instead of object. (Not recommended for multiple elements)
