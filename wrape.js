@@ -41,9 +41,8 @@ function Wrape(endpoints,global_options){
 				if(!(this instanceof New[name])){
 					throw new Error("You must initalize this object using 'new' command.");
 				}
-				this.def_values = def_values;
 				Object.assign(this,root);
-				
+				this.def_values = def_values;
 				//Set for the current initalized object
 				var child_setter = (function(def_values){
 					if ((this instanceof child_setter)) { throw new Error("You can't initalize this object.");}
@@ -103,7 +102,8 @@ function Wrape(endpoints,global_options){
 			var argument_params = Array.from(arguments);
 			
 			//Parse the params object
-			//Support passing parameters like arguments, instead of object. (Not recommended for multiple elements)
+			
+			//Support passing multiple arguments, create param object ordered by param order. (Not recommended)
 			if(argument_params.length > 1){
 				params = argument_params.reduce(function(o,k,i){
 					if(!request_params[i]){
@@ -113,7 +113,15 @@ function Wrape(endpoints,global_options){
 					return o;
 				},{});
 			}
-			else if(argument_params.length == 1 && request_params.length == 1 && typeof argument_params[0] !== "object"){
+			//FormData
+			else if(argument_params[0] instanceof FormData){
+				params = {}
+				argument_params[0].forEach(function(value, key){
+					params[key] = value;
+				});
+			}
+			//Single argument & Single Needed Param, not object
+			else if(argument_params.length == 1 && request_params.length == 1 && argument_params[0] && !argument_params[0][request_params[0]] && !(argument_params[0] instanceof FormData)){
 				params = {
 					[request_params[0]]: argument_params[0]
 				}
@@ -177,10 +185,10 @@ function Wrape(endpoints,global_options){
 					url = url.replace(new RegExp(`\:${escapeRegExp(param_name)}`),param_value);
 				}
 			}
-			query = query.toString();
+			var hasQuery = query.toString();
 			
-			if(query){
-				url = `${url}?${query}`;
+			if(hasQuery){
+				url = `${url}?${hasQuery}`;
 			}
 			
 			//Get Body
