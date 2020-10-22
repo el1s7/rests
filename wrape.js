@@ -1,5 +1,5 @@
 /*!
- * Wrape v1.1.7
+ * Wrape v1.1.8
  * Author: Elis <contact@elis.cc>
  * License: MIT
  */
@@ -257,7 +257,7 @@ function Wrape(endpoints,global_options){
 
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
-        define([], factory);
+        define("wrape",[], factory);
     } else if (typeof module === 'object' && module.exports) {
         module.exports = factory();
     } else {
