@@ -1,5 +1,5 @@
 /*!
- * Wrape v1.1.8
+ * Wrape v1.1.9
  * Author: Elis <contact@elis.cc>
  * License: MIT
  */
@@ -165,7 +165,11 @@ function Wrape(endpoints,global_options){
 				var param_dest = param.name || param_name;
 				
 				//Required Param or not
-				if(param.required && isNull(param_value)){ throw new Error(param.help || `The '${param_name}' field is required.`);}
+				if(param.required && isNull(param_value)){ 
+					var error = new Error(param.help || `The '${param_name}' field is required.`);
+					error.field = error.param = param_name;
+					throw error;
+				}
 	
 				//Skip, not required
 				if(isNull(param_value)) continue;
@@ -177,7 +181,9 @@ function Wrape(endpoints,global_options){
 				if(param.validate){
 					var isValid = (typeof param.validate === "function") ? param.validate(param_value) : (new RegExp(param.validate).test(param_value));
 					if(!isValid){
-						throw new Error(param.help || `The '${param_name}' field is invalid.`);
+						var error = new Error(param.help || `The '${param_name}' field is invalid.`);
+						error.field = error.param = param_name;
+						throw error;
 					}
 				}
 	

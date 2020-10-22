@@ -73,7 +73,11 @@ The response of request is parsed based by default, returning an object like thi
 }	
 ```
 Depending on the content type, you can get the body as `text`,`json` or `arrayBuffer`.
-	HTTP statuses other than OK, with throw an promise reject error with the response object.
+
+HTTP statuses other than OK, with throw an promise reject error with the response object.
+Errors can be HTTP status errors, or Wrape errors which are thrown when the param doesn't pass custom validation.
+The Wrape error object has the message of the param `help` and also a `param` property which holds the param name for reference.
+
 
 ## Examples
 
@@ -81,9 +85,55 @@ Depending on the content type, you can get the body as `text`,`json` or `arrayBu
 ```javascript
 import Wrape from 'wrape';
 
-(async function(){
+const api_config = {
+	user:{
+		login:{
+			path: '/user/login',
+			method: 'POST',
+			params:{
+				username:{
+					required: true,
+				}
+				password: {
+					required: true,
+					help: "The password must be at least 8 characters.",
+					validate: (password) => { return password.length >= 8;}
+				}
+			}
+			
+		}
+	}
+}
 
-//The JSON API Configuration object that Wrape uses to create the API model 
+const api = Wrape(api_config,{base: 'https://example.com'});
+
+//Wrape Validation Error
+api.user.login({username: 'john', password:'0'})
+.catch((err) => {
+	console.log(err.message); //The password must be at least 8 characters.
+	console.log(err.param); //password
+	
+});
+
+
+//HTTP Status Error
+api.user.login({username: 'john', password:'wrong_password'})
+.then((res)=> {
+	console.log(res.status); //200
+	console.log(res.json.message); //Logged in successfully.
+})
+.catch((res) => {
+	console.log(res.status); //401
+	console.log(res.json.message); //User password is invalid.
+});
+	
+```
+
+#### Another one
+Firstly we create the API object using the API configuration.
+```javascript
+import Wrape from 'wrape';
+
 const api_config = {
 	user:{
 		info:{
@@ -112,19 +162,32 @@ const api_config = {
 	
 }
 const api = Wrape(api_config,{base: 'https://httpbin.org/anything'});
-const User = new api.user.set({authorization: 'login_token'}); /* Initialzing with set function */
-var userInfo = await User.info({id: 1});
-var userInfo = await api.user.info({id: 1,authorization:'login_token'}) /* Without initalizing */
-
-})
-
-
 ```
+Now we can simply call any endpoint like this
+```javascript
+api.user.info({id: 1,authorization:'login_token'})
+.then((res) => console.log(res));
+```
+
+You can initalize a new API object and set param values
+```javascript
+const User = new api.user.set({authorization: 'login_token'}); 
+User.info({id: 1}).then((res) => {
+	console.log(res.json);
+});
+```
+
+Also you can still set or modify param values on an initalized object
+```javascript
+User.set({authorization: 'update_login_token'});
+```
+
 In the example above, we have have created a `user` category with a `info` endpoint. 
 You can call endpoint by passing an object of params, if params are invalid or required it will throw an error with the param help message.
 Categories can be initalized by using the `set` function to store param values, the param values are readable by each endpoint of that category. You can also call the endpoint directly without initalization.
 
-#### Another Example
+#### And another one
+An example of passing params to the URL Path.
 ```javascript
 import Wrape from 'wrape';
 
