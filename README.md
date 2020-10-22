@@ -52,7 +52,6 @@ const api = Wrape(api_configuration,options);
      - `query` the param will be URL encoded in URL query *(default for GET request)*
      - `headers` the param will be set in request headers
      - `path` the param will be set in request path, you must declare the named parameters in   path, check [exmaple](#another-example) below. 
-By default is `query` for GET requests and `body` for POST requests
 
 ### Global Options
 	This is the global options you set when you initalize Wrape, `Wrape(api_config,global_options)`
