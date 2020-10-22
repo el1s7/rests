@@ -93,7 +93,7 @@ const api_config = {
 			params:{
 				username:{
 					required: true,
-				}
+				},
 				password: {
 					required: true,
 					help: "The password must be at least 8 characters.",
