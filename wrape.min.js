@@ -1,5 +1,5 @@
 /*!
- * Wrape v1.1.6
+ * Wrape v1.1.7
  * Author: Elis <contact@elis.cc>
  * License: MIT
  */
