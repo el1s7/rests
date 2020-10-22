@@ -1,3 +1,4 @@
+
 # Wrape
 [![license](https://img.shields.io/github/license/elis-k/wrape)](https://github.com/elis-k/wrape/blob/master/LICENSE)
 [![npm](https://img.shields.io/npm/v/wrape)](https://www.npmjs.com/package/wrape)
@@ -62,17 +63,17 @@ This is the global options you set when you initalize Wrape, `Wrape(api_config,g
   - **`agent`**: You can use this option to set proxy if you're using node-fetch.
 	
 ### Responses
-	The response of request is parsed based by default, returning an object like this:
-	```javascript
-		{
-			status: 200,
-			statusText: 'OK',
-			headers: {...},
-			json: {'status': 'ok'},
-		}
-	```
-	Depending on the response content type, you can get the body as `text`,`json` or `arrayBuffer`.
-	Requests with not OK status codes with throw an promise reject error with the response object.
+The response of request is parsed based by default, returning an object like this:
+```json
+{
+	status: 200,
+	statusText: 'OK',
+	headers: {...},
+	json: {'message': 'success'},
+}	
+```
+Depending on the content type, you can get the body as `text`,`json` or `arrayBuffer`.
+	HTTP statuses other than OK, with throw an promise reject error with the response object.
 
 ## Examples
 
