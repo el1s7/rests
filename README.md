@@ -59,8 +59,8 @@ This is the global options you set when you initalize Wrape, `Wrape(api_config,g
   - **`base`**: The base URL for this API, will be prepended to each request path, default is empty.
   - **`defaultHeaders`**: The global headers to add to all requests.
   - **`defaultParamValues`**: An object of `{param_key : param_value}`, useful for setting default values for all categories and endpoints.
-  - **`parseResponse`**: Parse response and throw errors, if disabled the response will be the default Fetch API response.
-  - **`agent`**: You can use this option to set proxy if you're using node-fetch.
+  - **`parseResponse`**: If disabled the response object will be the default Fetch API response object.
+  - **`agent`**: You can use this option to set proxy if you're using node-fetch. *(default true)*
 	
 ### Responses
 The response of request is parsed based by default, returning an object like this:
