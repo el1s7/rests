@@ -63,11 +63,11 @@ This is the global options you set when you initalize Wrape, `Wrape(api_config,g
 	
 ### Responses
 	The response of request is parsed based by default, returning an object like this:
-	```json
+	```javascript
 		{
 			status: 200,
 			statusText: 'OK',
-			headers: {..},
+			headers: {...},
 			json: {'status': 'ok'},
 		}
 	```
