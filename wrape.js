@@ -1,3 +1,9 @@
+/*!
+ * Wrape v1.1.4
+ * Author: Elis <contact@elis.cc>
+ * License: MIT
+ */
+
 function Wrape(endpoints,global_options){
 	
 	//Parse Global Options
@@ -5,8 +11,9 @@ function Wrape(endpoints,global_options){
 	
 	var default_global = {
 		"base": "",
-		"headers":{},
-		"params":{},
+		"defaultHeaders":{},
+		"defaultParamValues":{},
+		"parseResponse": true,
 		"agent": false, //node-fetch, able to add proxy
 	}
 	
@@ -15,20 +22,26 @@ function Wrape(endpoints,global_options){
 	function ajax(url, options,type) {
 		return fetch(url, options)
 			.then(async function(res){
-				if (!res.ok) {
-					return Promise.reject(res);
+				if(global_options.parseResponse){
+					var resobj = {};
+					var content_type = res.headers.get('Content-Type');
+					resobj = {
+						'status_code': res.status,
+						'status': res.status,
+						'statusText': res.statusText,
+						'headers': res.headers,
+					}
+					if(content_type && (new RegExp("application\/json")).test(content_type)){resobj['json'] = await res.json();}
+					else if(content_type && (new RegExp("text\/")).test(content_type)){resobj['text'] = await res.text();}
+					else{resobj['arrayBuffer'] = await res.arrayBuffer()}
 				}
-				var content_type = res.headers.get('Content-Type');
-				var resobj = {
-					'status_code': res.status,
-					'status': res.status,
-					'statusText': res.statusText,
-					'headers': res.headers,
+				else{
+					resobj = res;
 				}
-				if(content_type && (new RegExp("application\/json")).test(content_type)){resobj['json'] = await res.json();}
-				else if(content_type && (new RegExp("text\/")).test(content_type)){resobj['text'] = await res.text();}
-				else{resobj['arrayBuffer'] = await res.arrayBuffer()}
 				
+				if (!res.ok) {
+					return Promise.reject(resobj);
+				}
 				return resobj
 			});
 	}
@@ -93,7 +106,7 @@ function Wrape(endpoints,global_options){
 			var url = `${global_options.base}${request.path}`;
 			var options = {
 				method: request.method,
-				headers: global_options.headers,
+				headers: global_options.defaultHeaders,
 				agent: global_options.agent
 			}
 			
@@ -148,7 +161,7 @@ function Wrape(endpoints,global_options){
 	
 			for (var param_name in request.params){
 				var param = request.params[param_name];
-				var param_value = params[param_name] || this.def_values[param_name] || global_options.params[param_name] || param.default;
+				var param_value = params[param_name] || this.def_values[param_name] || global_options.defaultParamValues[param_name] || param.default;
 				var param_dest = param.name || param_name;
 				
 				//Required Param or not
@@ -158,10 +171,15 @@ function Wrape(endpoints,global_options){
 				if(isNull(param_value)) continue;
 				
 				//Formatter function?
-				if(typeof param.formatter === "function"){param_value = param.formatter(param_value);}
+				if(typeof param.formatter === "function" || typeof param.format === "function"){var formatFunc = (param.format || param.formatter); param_value = formatFunc(param_value);}
 				
 				//Validate
-				if(param.validate && !(new RegExp(param.validate).test(param_value))){ throw new Error(param.help || `The '${param_name}' field is invalid.`);}
+				if(param.validate){
+					var isValid = (typeof param.validate === "function") ? param.validate(param_value) : (new RegExp(param.validate).test(param_value));
+					if(!isValid){
+						throw new Error(param.help || `The '${param_name}' field is invalid.`);
+					}
+				}
 	
 				//Location
 				var param_location = (typeof param.location === "string" ? param.location.toLowerCase() : def_param_locations[options.method]);
