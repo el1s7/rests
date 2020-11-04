@@ -1,5 +1,5 @@
 /*!
- * Wrape v1.2.1
+ * Wrape v1.2.2
  * Author: Elis <contact@elis.cc>
  * License: MIT
  */
@@ -216,7 +216,7 @@ function Wrape(endpoints,global_options){
 			}
 			
 			//Get Body
-			if((body.keys && !isEmptyIterable(body.keys())) || body.toString().length > 1){
+			if(body.keys && !isEmptyIterable(body.keys())){
 				options['body'] = ((request.enctype == allowed_param_enctypes[0]) ? body : body.toString());
 			}
 			
