@@ -1,5 +1,5 @@
 /*!
- * Wrape v1.2.0
+ * Wrape v1.2.1
  * Author: Elis <contact@elis.cc>
  * License: MIT
  */
@@ -146,8 +146,8 @@ function Wrape(endpoints,global_options){
 	
 			this.def_values = this.def_values || {};
 			var bodyTypes = {
-				'multipart/form-data': function(){return new URLSearchParams()},
-				'application/x-www-form-urlencoded': function(){ return new FormData();},
+				'multipart/form-data': function(){ return new FormData();},
+				'application/x-www-form-urlencoded': function(){return new URLSearchParams()},
 				'application/json': function(){
 					return {
 						append: function(key,value){ return this[key] = value;},
