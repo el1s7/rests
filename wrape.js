@@ -1,5 +1,5 @@
 /*!
- * Wrape v1.2.2
+ * Wrape v1.2.3
  * Author: Elis <contact@elis.cc>
  * License: MIT
  */
@@ -31,15 +31,21 @@ function Wrape(endpoints,global_options){
 						'statusText': res.statusText,
 						'headers': res.headers,
 					}
-					if(content_type && (new RegExp("application\/json")).test(content_type)){resobj['json'] = await res.json();}
+					if(content_type && (new RegExp("application\/json")).test(content_type)){
+						resobj['json'] = await res.json();
+					}
 					else if(content_type && (new RegExp("text\/")).test(content_type)){resobj['text'] = await res.text();}
 					else{resobj['arrayBuffer'] = await res.arrayBuffer()}
+					
+					var default_msg = (res.ok ? "Success." : "Something went wrong.");
+					resobj['message'] = (resobj['json'] && resobj['json']['message']) ? resobj['json']['message'] : default_msg;
 				}
 				else{
 					resobj = res;
 				}
 				
 				if (!res.ok) {
+					
 					return Promise.reject(resobj);
 				}
 				return resobj
