@@ -10,14 +10,14 @@
   "keywords": [
     "sdk",
     "api",
+	"client"
+	"generate"
+	"openapi"
+	"swagger"
     "wrape",
     "wrapper",
     "fetch",
-    "oop",
-    "object",
-    "request",
-    "model",
-    "organize"
+	"request"
   ],
   "repository": {
     "type": "git",
