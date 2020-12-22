@@ -17,13 +17,55 @@ Easily generate API client's SDK — organize and simplify API Requests — OOP-
 ## Installation
 `npm i wrape`
 
-## Quick  Documentaion
-### Usage
+
+### Basic Example
 ```javascript
 import Wrape from 'wrape';
-import {api_configuration,options} from './config';
-const api = Wrape(api_configuration,options);
+
+const api_config = {
+	user:{
+		login:{
+			path: '/user/login',
+			method: 'POST',
+			params:{
+				username:{
+					required: true,
+				},
+				password: {
+					required: true,
+					help: "The password must be at least 8 characters.",
+					validate: (password) => { return password.length >= 8;}
+				}
+			}
+			
+		}
+	}
+}
+
+const api = Wrape(api_config,{base: 'https://example.com'});
+
+//Wrape Validation Error
+api.user.login({username: 'john', password:'0'})
+.catch((err) => {
+	console.log(err.message); //The password must be at least 8 characters.
+	console.log(err.param); //password
+	
+});
+
+
+//HTTP Status Error
+api.user.login({username: 'john', password:'wrong_password'})
+.then((res)=> {
+	console.log(res.status); //200
+	console.log(res.json.message); //Logged in successfully.
+})
+.catch((res) => {
+	console.log(res.status); //401
+	console.log(res.json.message); //User password is invalid.
+});
+	
 ```
+## Quick  Documentaion
 
 ### API Configuration
 
@@ -82,55 +124,7 @@ The Wrape error object has the message of the param `help` and also a `param` pr
 
 ## Examples
 
-#### Basic Example
-```javascript
-import Wrape from 'wrape';
-
-const api_config = {
-	user:{
-		login:{
-			path: '/user/login',
-			method: 'POST',
-			params:{
-				username:{
-					required: true,
-				},
-				password: {
-					required: true,
-					help: "The password must be at least 8 characters.",
-					validate: (password) => { return password.length >= 8;}
-				}
-			}
-			
-		}
-	}
-}
-
-const api = Wrape(api_config,{base: 'https://example.com'});
-
-//Wrape Validation Error
-api.user.login({username: 'john', password:'0'})
-.catch((err) => {
-	console.log(err.message); //The password must be at least 8 characters.
-	console.log(err.param); //password
-	
-});
-
-
-//HTTP Status Error
-api.user.login({username: 'john', password:'wrong_password'})
-.then((res)=> {
-	console.log(res.status); //200
-	console.log(res.json.message); //Logged in successfully.
-})
-.catch((res) => {
-	console.log(res.status); //401
-	console.log(res.json.message); //User password is invalid.
-});
-	
-```
-
-#### Another one
+#### Another Example
 Firstly we create the API object using the API configuration.
 ```javascript
 import Wrape from 'wrape';
