@@ -18,7 +18,7 @@ Easily generate API client's SDK — organize and simplify API Requests — OOP-
 `npm i wrape`
 
 
-### Basic Example
+## Basic Example
 ```javascript
 import Wrape from 'wrape';
 
