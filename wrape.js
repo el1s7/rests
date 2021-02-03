@@ -1,5 +1,5 @@
 /*!
- * Wrape v1.2.4
+ * Wrape v1.2.5
  * Author: Elis <contact@elis.cc>
  * License: MIT
  */
@@ -19,7 +19,28 @@ function Wrape(endpoints,global_options){
 	
 	global_options = Object.assign(default_global,global_options);
 	
-	function ajax(url, options,type) {
+
+	/* Some Functions */
+	function isNull(value){
+		return value === null || value === undefined;
+	}
+	
+	function isEmptyIterable(iterable){
+		for (var _ of iterable) {
+			return false;
+		}
+	
+		return true;
+	};
+	function escapeRegExp(string) {
+		return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+	}
+
+
+
+
+	/* Fetch Wrapper */
+	function ajax(url, options, responseFormatter) {
 		return fetch(url, options)
 			.then(async function(res){
 				if(global_options.parseResponse){
@@ -31,12 +52,19 @@ function Wrape(endpoints,global_options){
 						'statusText': res.statusText,
 						'headers': res.headers,
 					}
-					if(content_type && (new RegExp("application\/json")).test(content_type)){
-						resobj['json'] = await res.json();
-					}
-					else if(content_type && (new RegExp("text\/")).test(content_type)){resobj['text'] = await res.text();}
-					else{resobj['arrayBuffer'] = await res.arrayBuffer()}
 					
+					
+					try {
+						if(content_type && (new RegExp("application\/json")).test(content_type)) {
+							resobj['json'] = await res.json();
+						}
+						else if(content_type && (new RegExp("text\/")).test(content_type)) { resobj['text'] = await res.text(); }
+						else { resobj['arrayBuffer'] = await res.arrayBuffer() }
+					}
+					catch(err) {
+						console.warn(err);
+					}
+
 					var default_msg = (res.ok ? "Success." : "Something went wrong.");
 					resobj['message'] = (resobj['json'] && resobj['json']['message']) ? resobj['json']['message'] : default_msg;
 				}
@@ -45,13 +73,16 @@ function Wrape(endpoints,global_options){
 				}
 				
 				if (!res.ok) {
-					
 					return Promise.reject(resobj);
+				}
+				if(typeof responseFormatter === "function") {
+					return responseFormatter(resobj);
 				}
 				return resobj
 			});
 	}
 	
+
 	//The set constructor
 	function newSetObject(root,name){
 		name = name || "Wrape";
@@ -76,32 +107,26 @@ function Wrape(endpoints,global_options){
 		return New[name];
 	}
 	
-	function isNull(value){
-		return value === null || value === undefined;
-	}
 	
-	function isEmptyIterable(iterable){
-		for (var _ of iterable) {
-			return false;
-		}
-	
-		return true;
-	};
-	function escapeRegExp(string) {
-		return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-	}
 	
 
-	
+	//Main Part
 	function fetcher(request){
 		
 		request.method = (typeof request.method === "string" ? request.method.toUpperCase() : "GET");
 		
-		
-		var allowed_param_locations = ["headers","body","query","path"];
-		var allowed_param_enctypes = ['multipart/form-data','application/x-www-form-urlencoded','application/json'];
-		request.enctype = ((request.enctype && allowed_param_enctypes.includes(request.enctype)) ? request.enctype : allowed_param_enctypes[0]);
-		
+
+		//Request Body Encoding (if any)
+		var shorthand_enctypes = {
+			"form": "multipart/form-data",
+			"url": "application/x-www-form-urlencoded",
+			"json": "application/json"
+		}
+		var allowed_param_enctypes = Object.values(shorthand_enctypes);
+		request.enctype = shorthand_enctypes[request.enctype] || (allowed_param_enctypes.includes(request.enctype) ? request.enctype : allowed_param_enctypes[0]);
+
+
+		var allowed_param_locations = ["headers", "body", "query", "path"];
 		var def_param_locations = {
 			'POST': 'body',
 			'GET': 'query',
@@ -232,10 +257,12 @@ function Wrape(endpoints,global_options){
 				options['headers']['Content-Type'] = request.enctype;
 			}
 	
-			return ajax(url,options);
+			return ajax(url,options, request.response);
 		}
 	}
 	
+
+	//Recursive Function
 	function ocreater(root,tree,name){
 		for(var category in tree){
 			var category_tree = tree[category];

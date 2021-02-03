@@ -38,6 +38,7 @@ const api = Wrape(api_configuration,options);
 	 - `application/x-www-form-urlencoded`
 	 - `application/json`
   - **`params`**: An object consisting of [Params Object](#params-object)s.
+  - **`response`**: A function for formatting the response.
 
 #### Params Object
  - **`name`**: By default the param name is the object key. Here you can specify another name for the param which will be sent on the request, though still the key will be used for reference when calling endpoint and passing param.
