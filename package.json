@@ -1,6 +1,6 @@
-﻿{
+{
   "name": "wrape",
-  "version": "1.2.41",
+  "version": "1.2.6",
   "description": "Easily generate API client's SDK — organize and simplify API Requests — OOP-ish way.",
   "main": "wrape.min.js",
   "scripts": {
@@ -10,14 +10,14 @@
   "keywords": [
     "sdk",
     "api",
-	"client",
-	"generate",
-	"openapi",
-	"swagger",
+    "client",
+    "generate",
+    "openapi",
+    "swagger",
     "wrape",
     "wrapper",
     "fetch",
-	"request"
+    "request"
   ],
   "repository": {
     "type": "git",
@@ -27,5 +27,10 @@
   "license": "MIT",
   "devDependencies": {
     "terser": "^5.3.8"
+  },
+  "dependencies": {
+    "crypto-convert": "^1.0.0",
+    "form-data": "^3.0.0",
+    "node-fetch": "^2.6.1"
   }
 }
