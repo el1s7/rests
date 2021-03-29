@@ -1,5 +1,5 @@
 /*!
- * Wrape v1.2.63
+ * Wrape v1.2.64
  * Author: Elis <contact@elis.cc>
  * License: MIT
  */
@@ -220,7 +220,7 @@ function Wrape(fetch, FormData, endpoints, global_options){
 
 		return async function (params) {
 		
-			var stored_options = this.$options || category_options || global_options ;
+			var stored_options = this.$options || category_options || global_options;
 
 			var url = `${stored_options.base}${request.path}`;
 
@@ -278,7 +278,7 @@ function Wrape(fetch, FormData, endpoints, global_options){
 
 			for (var param_name in request_params){
 				var param = request_params[param_name];
-				var param_value = params[param_name] || param.default || stored_options.values[param_name];
+				var param_value = params[param_name] || (param.hasOwnProperty('default') ? param.default : stored_options.values[param_name]);
 				var param_dest = param.name || param_name;
 				
 				//Required Param or not
@@ -409,9 +409,12 @@ function Wrape(fetch, FormData, endpoints, global_options){
 					category_options = category_tree;
 				}
 
-				root[category] = category.substr(0, 1) === '$' ? //Special Object (i.e Options)
-					category_tree :
-					ocreater({}, category_tree, category, category_options)
+				// Skip Special Object (i.e Options)
+				if(category.substr(0, 1) === '$') {
+					continue;
+				}
+
+				root[category] = ocreater({}, category_tree, category, category_options);
 			}
 		}
 		
