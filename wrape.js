@@ -1,5 +1,5 @@
 /*!
- * Wrape v1.2.61
+ * Wrape v1.2.62
  * Author: Elis <contact@elis.cc>
  * License: MIT
  */
@@ -317,7 +317,7 @@ function Wrape(fetch, FormData, endpoints, global_options){
 					continue;
 				}
 				if(param_location == "path"){
-					url = url.replace(new RegExp(`\:${escapeRegExp(param_name)}`),param_value);
+					url = url.replace(new RegExp(`\:${escapeRegExp(param_dest)}`),param_value);
 				}
 			}
 
