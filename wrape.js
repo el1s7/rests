@@ -1,5 +1,5 @@
 /*!
- * Wrape v1.2.6
+ * Wrape v1.2.61
  * Author: Elis <contact@elis.cc>
  * License: MIT
  */
@@ -177,7 +177,7 @@ function Wrape(fetch, FormData, endpoints, global_options){
 	 * @param {*} root 
 	 * @param {*} name 
 	 */
-	function newSetObject(root,name, category_options){
+	function newSetObject(root, name, category_options){
 		name = name || "Wrape";
 		var New = {
 			[name]: (function(options){
@@ -186,9 +186,12 @@ function Wrape(fetch, FormData, endpoints, global_options){
 				}
 				Object.assign(this, root);
 				
-				this.set = (function (options) {
+				const setter = (function(options){
+					if ((this instanceof setter)) { throw new Error("This object is already initialized.");}
 					this.$options = Object.assign({}, global_options, category_options, options);
 				}).bind(this);
+				
+				this.set = setter;
 
 				this.set(options);
 
@@ -407,7 +410,7 @@ function Wrape(fetch, FormData, endpoints, global_options){
 		}
 		
 		//If it has endpoints , add the 'set' constructor function.
-		root = (root._ne) ? Object.assign(root,{'set': newSetObject(root,name, category_options)}) : root;
+		root = (root._ne) ? Object.assign(root,{'set': newSetObject(root, name, category_options)}) : root;
 		
 		return root;
 	}

@@ -1,6 +1,6 @@
 {
   "name": "wrape",
-  "version": "1.2.6",
+  "version": "1.2.61",
   "description": "Easily generate API client's SDK — organize and simplify API Requests — OOP-ish way.",
   "main": "wrape.min.js",
   "scripts": {
