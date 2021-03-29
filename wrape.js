@@ -1,5 +1,5 @@
 /*!
- * Wrape v1.2.62
+ * Wrape v1.2.63
  * Author: Elis <contact@elis.cc>
  * License: MIT
  */
@@ -22,7 +22,8 @@ function Wrape(fetch, FormData, endpoints, global_options){
 	
 	var default_global = {
 		"base": "",
-		"headers":{}, //Append Headers to All Requests
+		"headers": {}, //Append Headers to All Requests
+		"params": {}, //Add Extra Params to All Requests
 		"values": {}, //Store default Values for All Params (Key: Value)
 		"sender": false, //Use a custom function to send request -> custom_fetch(url, options, wrape_options, response_middleware?)
 		"request_middleware": null, //Pre-Request Middleware | Can Modify Request (Function)
@@ -211,6 +212,8 @@ function Wrape(fetch, FormData, endpoints, global_options){
 		
 		request.enctype = def_param_enctypes[request.enctype] || (allowed_param_enctypes.includes(request.enctype) ? request.enctype : allowed_param_enctypes[0]);
 
+		request.params = request.params || {};
+
 		if(category_options) {
 			category_options = Object.assign({}, global_options, category_options);
 		}
@@ -228,7 +231,9 @@ function Wrape(fetch, FormData, endpoints, global_options){
 			}
 			
 			
-			var request_params = Object.keys(request.params);
+			var request_params = Object.assign({}, stored_options.params, request.params)
+			var request_params_keys = Object.keys(request_params);
+			
 			var argument_params = Array.from(arguments);
 
 			
@@ -246,10 +251,10 @@ function Wrape(fetch, FormData, endpoints, global_options){
 			//Support passing multiple arguments, create param object ordered by param order. (Not recommended)
 			if(argument_params.length > 1){
 				params = argument_params.reduce(function(o,k,i){
-					if(!request_params[i]){
+					if(!request_params_keys[i]){
 						return o;
 					}
-					o[request_params[i]] = k;
+					o[request_params_keys[i]] = k;
 					return o;
 				},{});
 			}
@@ -261,17 +266,18 @@ function Wrape(fetch, FormData, endpoints, global_options){
 				});
 			}
 			//Single argument & Single Needed Param, not object
-			else if(argument_params.length == 1 && request_params.length == 1 && argument_params[0] && !argument_params[0][request_params[0]] && !(argument_params[0] instanceof FormData)){
+			else if(argument_params.length == 1 && request_params_keys.length == 1 && argument_params[0] && !argument_params[0][request_params_keys[0]] && !(argument_params[0] instanceof FormData)){
 				params = {
-					[request_params[0]]: argument_params[0]
+					[request_params_keys[0]]: argument_params[0]
 				}
 			}
 			else{
 				params = params || {};
 			}
-			
-			for (var param_name in request.params){
-				var param = request.params[param_name];
+
+
+			for (var param_name in request_params){
+				var param = request_params[param_name];
 				var param_value = params[param_name] || param.default || stored_options.values[param_name];
 				var param_dest = param.name || param_name;
 				
