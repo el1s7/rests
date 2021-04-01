@@ -1,5 +1,5 @@
 /*!
- * Wrape v1.2.64
+ * Wrape v1.2.65
  * Author: Elis <contact@elis.cc>
  * License: MIT
  */
@@ -151,7 +151,7 @@ function Wrape(fetch, FormData, endpoints, global_options){
 					}
 				
 					if(!res.ok) {
-						throw new Error("Request failed.");
+						throw resobj;
 					}
 				}
 				catch(err) {
@@ -163,6 +163,7 @@ function Wrape(fetch, FormData, endpoints, global_options){
 							},
 							resobj);
 					}
+					
 					return Promise.reject(err);
 				}
 
