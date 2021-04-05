@@ -1,5 +1,5 @@
 /*!
- * Wrape v1.2.65
+ * Wrape v1.2.66
  * Author: Elis <contact@elis.cc>
  * License: MIT
  */
@@ -279,7 +279,7 @@ function Wrape(fetch, FormData, endpoints, global_options){
 
 			for (var param_name in request_params){
 				var param = request_params[param_name];
-				var param_value = params[param_name] || (param.hasOwnProperty('default') ? param.default : stored_options.values[param_name]);
+				var param_value = !isNull(params[param_name]) ? params[param_name] : (param.hasOwnProperty('default') ? param.default : stored_options.values[param_name]);
 				var param_dest = param.name || param_name;
 				
 				//Required Param or not
