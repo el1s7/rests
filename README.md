@@ -2,7 +2,13 @@
 
 # Wrape
 
-[![license](https://img.shields.io/github/license/elis-k/wrape)](https://github.com/elis-k/wrape/blob/master/LICENSE) [![npm](https://img.shields.io/npm/v/wrape)](https://www.npmjs.com/package/wrape) [![npm](https://img.shields.io/npm/dw/wrape)](https://www.npmjs.com/package/wrape)
+[![license](https://img.shields.io/github/license/elis-k/wrape)](https://github.com/elis-k/wrape/blob/master/LICENSE)
+
+[![npm](https://img.shields.io/npm/v/wrape)](https://www.npmjs.com/package/wrape)
+
+[![npm](https://img.shields.io/npm/dw/wrape)](https://www.npmjs.com/package/wrape)
+
+  
 
 Easily generate API client's SDK — organize and simplify API Requests.
 If you find yourself repeating HTTP requests code blocks, then this library is for you.
@@ -35,13 +41,12 @@ api.login({
 ## Features
 
 - No dependencies, using Fetch API
-
+- Documentation Generator
 - Multiple API categories & subcategories
-
 - Elegant parameter handling
-
 - Universal support, small size (2.9KB)
 - For Browsers & Node.js
+
 
   
 ## Installation
@@ -49,9 +54,7 @@ api.login({
 `npm i wrape`
 
   
-  
-
-## Basic Example
+## Usage
 
 You start by writing a JSON schema of all your API endpoints. 
 You can split requests into categories and subcategories.
@@ -90,12 +93,21 @@ api.user.login({username:  'john', password:'wrong_password'})
 	console.log(res.status); //401
 });
 ```
+
+  ##  Real-life Usages
+Some projects using Wrape:
+
+- https://github.com/tikapi-io/tiktok-api
+
 ## Quick  Documentaion
 
 ### API Configuration
 
 #### Categories
  An API category is an object consisting of [Endpoint Object](#endpoint-object)s or subcategories.
+A category can also contain special keys:
+  - **`$options`**: Set options for this category, same object as  [Gloabl Options](#global-options)
+  - **`$help`**:  A  description used for endpoint generation 
 
 #### Endpoint Object
   - **`method`**: The request method ,GET,POST etc.
@@ -108,6 +120,8 @@ api.user.login({username:  'john', password:'wrong_password'})
   - **`params`**: An object consisting of [Params Object](#params-object)s.
   - **`response`**: A hook function for modifying the response.
   - **`request`**: A hook function for modifying the request.
+  - **`help`**: A description used for documantaion generation
+  - **`example_response`**: Example response used for documentation generation
 
 #### Params Object
  - **`name`**: By default the param name is the Param object key. 
@@ -116,13 +130,15 @@ api.user.login({username:  'john', password:'wrong_password'})
  - **`validate`**: Validate the param values, it can be:
      - A Regular expression string.
      - A function, that returns a boolean.
+ - **`in`**:  Array of valid allowed values
  - **`help`** : An error message to throw if param is not valid, or required.
  - **`default`**: A default value for this param.
  - **`location`**: The location where this parameter will be in http request fields, it can be:
      - **`body`** the param will be encoded in body as form data *(default for POST request)*
      - **`query`** the param will be URL encoded in URL query *(default for GET request)*
      - **`headers`** the param will be set in request headers
-     - **`path`** the param will be set in request path, you must declare the named parameters in   path, check [exmaple](#another-example) below. 
+     - **`path`** the param will be set in request path, you must declare the named parameters in   path. 
+  - **``example``** : Example values used for documentation generation
 
 ### Global Options
 This is the global options you set when you initalize Wrape, these options can be overridden by Category options.
@@ -138,6 +154,16 @@ This is the global options you set when you initalize Wrape, these options can b
   - **`fetch_error_handler`**:  Function to handle fetch errors
   - **`fetch_agent`**: You can use this option to set proxy if you're using node-fetch. 
   
+
+### Documentation Generator
+You can generate a Markdown reference of the API, just like this:
+
+```javascript
+api.$docs({
+	output: "API.md",
+});
+```
+
   
 ### Responses
 The response of request is parsed based when `fetch_parse` option is true, returning an object like this:
@@ -192,16 +218,14 @@ const endpoints = {
 }
 const api = Wrape(api_config);
 ```
-#### Alternative Category Options
-You can also set options for a category by initializing it with `set` function.  This method doesn't work with subcategories.
+#### Setting Variables
+You can set enviroment variables for a category by initializing it with `set` function. 
 ```javascript
-const Profile = new api.user.profile.set({
-	values: {
-		key: 'default_auth_token'
-	}
+const User = new api.user.set({
+	authorization: 'default_auth_token'
 }); 
 
-Profile.information({id: 1}).then((res) => {
+User.info({id: 1}).then((res) => {
 	console.log(res.json);
 });
 ```

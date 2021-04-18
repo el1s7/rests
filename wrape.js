@@ -1,5 +1,5 @@
 /*!
- * Wrape v1.2.66
+ * Wrape v1.2.67
  * Author: Elis <contact@elis.cc>
  * License: MIT
  */
@@ -13,7 +13,7 @@
  * @param {Object|*} global_options 
  */
 
-function Wrape(fetch, FormData, endpoints, global_options){
+function Wrape(fetch, FormData, fs, endpoints, global_options){
 	
 	/**
 	 * Initalization options
@@ -103,6 +103,10 @@ function Wrape(fetch, FormData, endpoints, global_options){
 		return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 	}
 
+	function  capitalize(string) {
+		return string.substr(0, 1).toUpperCase() + string.substr(1, string.length);
+	}
+
 
 	/**
 	 * Fetch Wrapper 
@@ -176,26 +180,45 @@ function Wrape(fetch, FormData, endpoints, global_options){
 
 	/**
 	 * Constructor Maker Wrapper
+	 * Initalize a category and set values for it's endpoints. (Full category options can be updated with special $options key) 
 	 * @param {*} root 
 	 * @param {*} name 
 	 */
 	function newSetObject(root, name, category_options){
 		name = name || "Wrape";
 		var New = {
-			[name]: (function(options){
+			[name]: (function(values){
 				if(!(this instanceof New[name])){
 					throw new Error("You must initalize this object using 'new' command.");
 				}
 				Object.assign(this, root);
 				
-				const setter = (function(options){
-					if ((this instanceof setter)) { throw new Error("This object is already initialized.");}
-					this.$options = Object.assign({}, global_options, category_options, options);
+				const setter = (function(values){
+					if((this instanceof setter)) { throw new Error("This object is already initialized."); }
+					
+					// Special Options object
+					if(values["$options"]) {
+						if(typeof values["$options"] === "string" || typeof values["$options"] === "function" || typeof values["$options"] === "number" || typeof values["$options"] === "boolean") {
+							throw new Error("Invalid $options object received.");
+						}
+
+						Object.assign(category_options, values["$options"]);
+
+						delete values["$options"];
+					}
+
+					// Set Values for endpoints
+					category_options.values = {
+						...category_options.values,
+						...values
+					};
 				}).bind(this);
+
 				
+
 				this.set = setter;
 
-				this.set(options);
+				this.set(values);
 
 				return this;
 			})
@@ -207,7 +230,7 @@ function Wrape(fetch, FormData, endpoints, global_options){
 	 * Main Wrapper
 	 * @param {Object} request 
 	 */
-	function fetcher(request, category_options){
+	function fetcher(request, category_options, testing = false){
 		
 		request.method = (typeof request.method === "string" ? request.method.toUpperCase() : "GET");
 		
@@ -215,19 +238,14 @@ function Wrape(fetch, FormData, endpoints, global_options){
 
 		request.params = request.params || {};
 
-		if(category_options) {
-			category_options = Object.assign({}, global_options, category_options);
-		}
-
 		return async function (params) {
-		
-			var stored_options = this.$options || category_options || global_options;
+			var stored_options = category_options || global_options;
 
 			var url = `${stored_options.base}${request.path}`;
 
 			var options = {
 				method: request.method,
-				headers: stored_options.headers,
+				headers: { ...stored_options.headers },
 				agent: stored_options.fetch_agent
 			}
 			
@@ -279,7 +297,7 @@ function Wrape(fetch, FormData, endpoints, global_options){
 
 			for (var param_name in request_params){
 				var param = request_params[param_name];
-				var param_value = !isNull(params[param_name]) ? params[param_name] : (param.hasOwnProperty('default') ? param.default : stored_options.values[param_name]);
+				var param_value = !isNull(params[param_name]) ? params[param_name] : (param.hasOwnProperty('default') ? param.default : (stored_options.values[param_name] || (testing ? param.example : undefined)));
 				var param_dest = param.name || param_name;
 				
 				//Required Param or not
@@ -304,6 +322,15 @@ function Wrape(fetch, FormData, endpoints, global_options){
 						throw error;
 					}
 				}
+
+				//In
+				if(param.in && Array.isArray(param.in) && !param.in.includes(param_value)) {
+					var error = new Error(param.help || `The '${param_name}' field is invalid.`);
+					error.field = error.param = param_name;
+					throw error;
+				}
+
+				
 	
 				//Location
 				var param_location = (typeof param.location === "string" ? param.location.toLowerCase() : def_param_locations[options.method]);
@@ -375,6 +402,223 @@ function Wrape(fetch, FormData, endpoints, global_options){
 		}
 	}
 	
+	/**
+	 * Generate a Markdown Documentation
+	 * @param {Object} schema - The endpoints schema
+	 * @param {Object} config - The doc generation options 
+	 */
+	async function generateDocs(schema, config) {
+		
+		config = {
+			request: true,
+			response: false,
+			responseSleep: 0,
+			onlyExampleResponses: true,
+			showOptional: true,
+			commentOptional: true,
+			apiName: "api",
+			headStartLevel: 1,
+			output: "./API.md",
+			...config
+		};
+
+		const markdown = {
+			reference: "",
+			body: ""
+		};
+
+		const special_categories = ["$options", "$help"];
+
+	
+		const getParams = function(params, default_values, initialize= false) {
+			default_values = default_values || {};
+			var code = "";
+			
+			for(var param_name in params) {
+				var param = params[param_name];
+				var value = param.example || param.default || default_values[param_name] || param.type || "<any>";
+
+				if(!param.required && !config.showOptional) {
+					continue;
+				}
+				if(default_values[param_name] && initialize) {
+					continue;
+				}
+				
+				var commentOptional = config.commentOptional && !param.required ? "//" : "";
+
+				var helpers = [
+					param.required ? "required" : "optional",
+					param.in && Array.isArray(param.in) ? "Allowed: " + param.in.join(", ") : null,
+					param.min ? "Min: " + param.min : null,
+					param.mix ? "Max: " + param.max : null,
+					param.validate ? "Validate: " + (typeof param.validate === "string" ? param.validate : "<custom>") : null
+				].filter(h => h).join(" | ");
+				
+				value = typeof value === "string" ? '"' + value + '"' : value;
+				
+				code += `	${commentOptional}${param_name}: ${value}, //${helpers}\n`
+			}
+			return code;
+		}
+
+		const getInitialize = function (name, call_name, item_options, options) {
+			var params = item_options.params || {};
+
+			var default_values = Object.assign({}, item_options.values, options.values);
+
+			var code = "```javascript\n";
+			code += `const ${name} = new ${call_name}.set({\n`;
+			code += getParams(params, default_values, true);
+			code +="})\n";
+			code += "```\r\n\r\n";
+			return code;
+		}
+
+		const getCall = function (call_name, params, options) {
+			params = params || {};
+			var code = "```javascript\n";
+			code += `${call_name}({\n`;
+			code += getParams(params, options.values);
+			code +="})\n";
+			code += "```\r\n\r\n";
+			return code;
+		}
+
+		const getRequest = function (items, options) {
+			var code = "<details>\n<summary>Request</summary>\r\n\r\n";
+
+			var method = (items["method"] || "get").toUpperCase();
+			var default_location = method === "GET" ? "query" : "body";  
+			var params = items["params"] || {};
+
+			code += `**${method}** ${items["path"]}\n`;
+
+			if(Object.keys(params) !== 0) {
+				code += "|Parameter|Location|Required|Description|\n|--|--|--|--|\n";
+			
+				var parameters = Object.keys(params).map(function (name) {
+					return [
+						params[name].name || name,
+						params[name].location || default_location,
+						params[name].required ? true : false,
+						params[name].help
+					].join("|");
+				}).join("\n");
+
+				code += parameters + "\n";
+			}
+
+			code += "</details>\r\n\r\n";
+
+			return code;
+		}
+
+		const getResponse = async function (items, options) {
+			var code = "<details>\n<summary>Response</summary>\r\n\r\n";
+			var body = items.example_response;
+
+			if(!body) {
+				if(config.onlyExampleResponses) {
+					return "";
+				}
+				var send = fetcher(items, options, true);
+				try {
+					console.log(`[*] Generating response for ${items['path']}`);
+					//Sleep Between Requests when generating responses to avoid hitting rate limits
+					await new Promise(function (res, rej) {
+						setTimeout(function () {
+							res(true)
+						}, config.responseSleep);
+					});
+
+					var res = await send();
+					body = res.json;
+				}
+				catch(err) {
+					console.log(err);
+					return "";
+				}
+			}
+
+			code += "```json\r\n";
+			code += typeof body === "string" ? body : JSON.stringify(body, null, "\t");
+			code += "\r\n```\r\n";
+			code += "</details>\r\n\r\n";
+
+			return code;
+		}
+		
+		const generate = async function (categories, options, selector, call_name, level, true_level = 0) {
+			
+			level += 1;	
+			var head_level = Math.min(level, 6);
+
+			for(var category in categories) {
+				
+				if(special_categories.includes(category)) {
+					continue;	
+				}
+
+				if(!categories[category] || typeof categories[category] !== 'object') {
+					continue;				
+				}
+
+				var current_call_name = `${call_name}.${category}`;
+				var current_selector = `${selector}-${category}`;
+				var current_options = options;
+
+				var items = categories[category];
+				var isEndpoint = (items["path"] && typeof items["path"] === "string");
+				
+
+				var head = `<h${head_level} id="${current_selector}">${capitalize(category)}</h${head_level}>\r\n\r\n`,
+					link = "	".repeat(true_level) + `- [${category}](#${current_selector})\r\n`,
+					help_string = (items.$help || items.help),
+					help = typeof help_string === "string" ? help_string + "\r\n" : "",
+					initialize = "",
+					endpoint = "",
+					request = "",
+					response = "";
+				
+				if(items["$options"]) {
+					if(items["$options"].params) {
+						initialize = getInitialize(category, current_call_name, items["$options"], options);
+						current_call_name = category;
+					}
+					current_options = Object.assign({}, options, items["$options"]);
+				}
+
+
+				if(isEndpoint) {
+					endpoint = getCall(current_call_name, items["params"], current_options);
+					if(config.request) {
+						request = getRequest(items, current_options);
+					}
+					if(config.response) {
+						response = await getResponse(items, current_options);
+					}
+				}
+				
+				markdown.reference += link;
+				markdown.body += head + help + initialize + endpoint + request + response;
+
+				if(!isEndpoint) {
+					await generate(items, current_options, current_selector, current_call_name, level, true_level + 1)
+				}
+				
+			}
+		}
+
+		await generate(schema, global_options, config.apiName, config.apiName, config.headStartLevel);
+
+		if(fs && fs.writeFileSync && config.output) {
+			fs.writeFileSync(config.output, markdown.reference + "\r\n\r\n" + markdown.body);
+		}
+
+		return markdown;
+	}
+
 
 	/**
 	 * Recursive Loop schema and make wrappers
@@ -407,7 +651,8 @@ function Wrape(fetch, FormData, endpoints, global_options){
 			else {
 				
 				if(category === '$options') { //Special Options
-					category_options = category_tree;
+					var options = category_tree;
+					category_options = Object.assign({}, category_options, options);
 				}
 
 				// Skip Special Object (i.e Options)
@@ -420,12 +665,16 @@ function Wrape(fetch, FormData, endpoints, global_options){
 		}
 		
 		//If it has endpoints , add the 'set' constructor function.
-		root = (root._ne) ? Object.assign(root,{'set': newSetObject(root, name, category_options)}) : root;
+		root = (root._ne) ? Object.assign(root, {
+			'set': newSetObject(root, name, category_options)
+		}) : root;
 		
 		return root;
 	}
 
-	return ocreater({},endpoints,true);
+	return ocreater({
+		$docs: generateDocs.bind(null, endpoints)
+	}, endpoints, true, global_options);
 }
 
 
@@ -440,6 +689,7 @@ function Wrape(fetch, FormData, endpoints, global_options){
 }(typeof self !== 'undefined' ? self : this, function () {
 	const fetch = (typeof module === 'object' && module.exports) ? require("node-fetch") : window.fetch;
 	const FormData = (typeof module === 'object' && module.exports) ? require("form-data") : window.FormData;
+	const fs = (typeof module === 'object' && module.exports) ? require("fs") : null;
 
 	if(!fetch) {
 		console.warn("Fetch API is not installed. If you are using Node please install node-fetch.");
@@ -450,5 +700,5 @@ function Wrape(fetch, FormData, endpoints, global_options){
 		return false;
 	}
 	
-    return Wrape.bind(null,fetch,FormData);
+    return Wrape.bind(null, fetch, FormData, fs);
 }));
