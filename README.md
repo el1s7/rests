@@ -2,7 +2,8 @@
 
 # Wrape
 
-[![license](https://img.shields.io/github/license/elis-k/wrape)](https://github.com/elis-k/wrape/blob/master/LICENSE)[![npm](https://img.shields.io/npm/v/wrape)](https://www.npmjs.com/package/wrape)[![npm](https://img.shields.io/npm/dw/wrape)](https://www.npmjs.com/package/wrape)
+[![license](https://img.shields.io/github/license/elis-k/wrape)](https://github.com/elis-k/wrape/blob/master/LICENSE) [![npm](https://img.shields.io/npm/v/wrape)](https://www.npmjs.com/package/wrape) [![npm](https://img.shields.io/npm/dw/wrape)](https://www.npmjs.com/package/wrape)
+
 
 Easily generate API client's SDK — organize and simplify API Requests.
 If you find yourself repeating HTTP requests code blocks, then this library is for you.
