@@ -96,7 +96,7 @@ Some projects using Wrape:
 
 ## Quick  Documentaion
 
-### API Configuration
+### Schema
 
 #### Categories
  An API category is an object consisting of [Endpoint Object](#endpoint-object)s or subcategories.
