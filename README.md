@@ -102,7 +102,7 @@ Some projects using Wrape:
  An API category is an object consisting of [Endpoint Object](#endpoint-object)s or subcategories.
 A category can also contain special keys:
   - **`$options`**: Set options for this category, same object as  [Gloabl Options](#global-options)
-  - **`$help`**:  A  description used for endpoint generation 
+  - **`$help`**:  A  description used for documentation generation 
 
 #### Endpoint Object
   - **`method`**: The request method ,GET,POST etc.
