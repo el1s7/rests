@@ -2,7 +2,7 @@
 
 # Rested
 
-[![license](https://img.shields.io/github/license/elis-k/rested)](https://github.com/elis-k/rested/blob/master/LICENSE) [![npm](https://img.shields.io/npm/v/rested-js)](https://www.npmjs.com/package/rested-js) [![npm](https://img.shields.io/npm/dw/rested-js)](https://www.npmjs.com/package/rested-js)
+[![license](https://img.shields.io/github/license/elis-k/rested)](https://github.com/elis-k/rested/blob/master/LICENSE) [![npm](https://img.shields.io/npm/v/rested-js)](https://www.npmjs.com/package/rested-js) [![npm](https://img.shields.io/npm/dw/wrape)](https://www.npmjs.com/package/wrape)
 
 
 Easily generate API client's SDK — organize and simplify API Requests.
