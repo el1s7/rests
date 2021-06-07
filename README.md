@@ -1,8 +1,8 @@
   
 
-# Wrape
+# Rested
 
-[![license](https://img.shields.io/github/license/elis-k/wrape)](https://github.com/elis-k/wrape/blob/master/LICENSE) [![npm](https://img.shields.io/npm/v/wrape)](https://www.npmjs.com/package/wrape) [![npm](https://img.shields.io/npm/dw/wrape)](https://www.npmjs.com/package/wrape)
+[![license](https://img.shields.io/github/license/elis-k/rested)](https://github.com/elis-k/rested/blob/master/LICENSE) [![npm](https://img.shields.io/npm/v/rested-js)](https://www.npmjs.com/package/rested-js) [![npm](https://img.shields.io/npm/dw/rested-js)](https://www.npmjs.com/package/rested-js)
 
 
 Easily generate API client's SDK — organize and simplify API Requests.
@@ -46,7 +46,7 @@ api.login({
   
 ## Installation
 
-`npm i wrape`
+`npm i rested-js`
 
   
 ## Usage
@@ -54,7 +54,7 @@ api.login({
 You start by writing a JSON schema of all your API endpoints. 
 You can split requests into categories and subcategories.
 ```javascript
-import  Wrape  from  'wrape';
+import  Rested  from  'rested-js';
 
 const endpoints = {
 	user:{
@@ -76,7 +76,7 @@ const endpoints = {
 	}
 }
 
-const  api = Wrape(api_config,{ base:  'https://example.com'});
+const  api = Rested(api_config,{ base:  'https://example.com'});
 
 api.user.login({username:  'john', password:'short'}).catch((err) => {
 	console.log(err.message); //The password must be at least 8 characters.
@@ -90,7 +90,7 @@ api.user.login({username:  'john', password:'wrong_password'})
 ```
 
   ##  Real-life Usages
-Some projects using Wrape:
+Some projects using Rested:
 
 - https://github.com/tikapi-io/tiktok-api
 
@@ -136,13 +136,13 @@ A category can also contain special keys:
   - **``example``** : Example values used for documentation generation
 
 ### Global Options
-This is the global options you set when you initalize Wrape, these options can be overridden by Category options.
+This is the global options you set when you initalize Rested, these options can be overridden by Category options.
 
-`Wrape(endpoints,global_options)`
+`Rested(endpoints,global_options)`
   - **`base`**: The base Origin for all endpoints, will be prepended to each request path, default is empty.
   - **`headers`**:  Append Headers to all requests
   - **`values`**: An object of `{param_key : param_value}`, useful for setting default values for all categories and endpoints.
-   - **`sender`**: Use a custom function to send request -> `custom_fetch(url, options, wrape_options, response_middleware?)`
+   - **`sender`**: Use a custom function to send request -> `custom_fetch(url, options, Rested_options, response_middleware?)`
    - **`request_middleware`**:  Global hook pre-request function
    - **`response_middleware`**: Global hook on response function
   - **`fetch_parse`**: Parse Fetch Response (await JSON body\await body text) *(default true)*
@@ -178,7 +178,7 @@ Depending on the content type, you can get the body as `text` or `json`.
 In this example we declare a user category and set it's options with the special `$options` key.
 We also declare a `information` endpoint which contains `path` parameters.
 ```javascript
-import Wrape from 'wrape';
+import Rested from 'rested-js';
 
 const endpoints = {
 	user:{
@@ -211,7 +211,7 @@ const endpoints = {
 		}		   
 	}
 }
-const api = Wrape(api_config);
+const api = Rested(api_config);
 ```
 #### Setting Variables
 You can set enviroment variables for a category by initializing it with `set` function. 

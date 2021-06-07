@@ -1,11 +1,11 @@
-{
-  "name": "wrape",
+﻿{
+  "name": "rested-js",
   "version": "1.2.71",
   "description": "Easily generate API client's SDK — organize and simplify API Requests — OOP-ish way.",
-  "main": "wrape.min.js",
+  "main": "rested.min.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "terser -m -c --comments /^!/ -o wrape.min.js wrape.js"
+    "build": "terser -m -c --comments /^!/ -o rested.min.js rested.js"
   },
   "keywords": [
     "sdk",
@@ -15,13 +15,21 @@
     "openapi",
     "swagger",
     "wrape",
+    "rest",
+    "schema",
+    "http",
+    "post",
+    "get",
+    "categories",
+    "rested",
+    "rested-js",
     "wrapper",
     "fetch",
     "request"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/elis-k/wrape"
+    "url": "https://github.com/elis-k/rested"
   },
   "author": "Elis",
   "license": "MIT",
