@@ -96,13 +96,13 @@ Some projects using Rested:
 
 ## Quick  Documentaion
 
-### API Configuration
+### Schema
 
 #### Categories
  An API category is an object consisting of [Endpoint Object](#endpoint-object)s or subcategories.
 A category can also contain special keys:
   - **`$options`**: Set options for this category, same object as  [Gloabl Options](#global-options)
-  - **`$help`**:  A  description used for endpoint generation 
+  - **`$help`**:  A  description used for documentation generation 
 
 #### Endpoint Object
   - **`method`**: The request method ,GET,POST etc.
@@ -148,29 +148,6 @@ This is the global options you set when you initalize Rested, these options can 
   - **`fetch_parse`**: Parse Fetch Response (await JSON body\await body text) *(default true)*
   - **`fetch_error_handler`**:  Function to handle fetch errors
   - **`fetch_agent`**: You can use this option to set proxy if you're using node-fetch. 
-  
-
-### Documentation Generator
-You can generate a Markdown reference of the API, just like this:
-
-```javascript
-api.$docs({
-	output: "API.md",
-});
-```
-
-  
-### Responses
-The response of request is parsed based when `fetch_parse` option is true, returning an object like this:
-```javascript
-{
-	status: 200,
-	statusText: 'OK',
-	headers: {...},
-	json: {'message': 'success'},
-}	
-```
-Depending on the content type, you can get the body as `text` or `json`.
 
 
 ## Advanced Example
@@ -224,3 +201,26 @@ User.info({id: 1}).then((res) => {
 	console.log(res.json);
 });
 ```
+
+
+### Documentation Generator
+You can generate a Markdown reference of the API, just like this:
+
+```javascript
+api.$docs({
+	output: "API.md",
+});
+```
+
+  
+### Responses
+The response of request is parsed based when `fetch_parse` option is true, returning an object like this:
+```javascript
+{
+	status: 200,
+	statusText: 'OK',
+	headers: {...},
+	json: {'message': 'success'},
+}	
+```
+Depending on the content type, you can get the body as `text` or `json`.
