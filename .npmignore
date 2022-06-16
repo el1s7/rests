@@ -1,2 +1,6 @@
-wrape.js
-test.js
+*
+!lib/*
+!typings/**/*
+!package.json
+!README.md
+!LICENSE

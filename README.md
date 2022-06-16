@@ -1,226 +1,260 @@
   
 
-# Rested
-
-[![license](https://img.shields.io/github/license/el1s7/rested)](https://github.com/elis-k/rested/blob/master/LICENSE) [![npm](https://img.shields.io/npm/v/rested-js)](https://www.npmjs.com/package/rested-js) [![npm](https://img.shields.io/npm/dw/wrape)](https://www.npmjs.com/package/wrape)
-
+# Rests
 
 Easily generate API client's SDK — organize and simplify API Requests.
-If you find yourself repeating HTTP requests code blocks, then this library is for you.
-  
-  ### Transform this
- ```javascript
-fetch("https://example.com/login",{
-	'method': 'POST',
-	'headers': {
-		'Content-Type': 'application/x-www-form-urlencoded'
-	},
-	'data': 'user=test&password=test'
-}).then((res) => (if(!res.ok){ throw new Error("error")})
-.then((res) => res.json())
-.catch((err) => console.warn)
-.then(data)=> (console.log("Finally the response")));
-```
 
-### Into this
+
+
+### An API Request with Rests✅
 
 ```javascript
 api.login({
 	user: 'test',
 	password: 'test'
 })
-.then((data)=>(console.log(`Logged in!`)));
+.then(({json})=>(
+	console.log(`Logged in!`)
+));
+```
 
+### Normal API Request❌
+ ```javascript
+fetch("https://example.com/login",{
+	'method': 'POST',
+	'headers': {
+		'Content-Type': 'application/x-www-form-urlencoded'
+	},
+	'data': `user=${user}&password=${password}`
+}).then((res) => (if(!res.ok){ return Promise.reject("error"))})
+.then((res) => res.json())
+.catch((err) => console.warn)
+.then(data)=> (console.log("Finally the response")));
 ```
 
 ## Features
 
-- No dependencies, using Fetch API
-- Documentation Generator
-- Multiple API categories & subcategories
-- Elegant parameter handling
-- Universal support, small size (2.9KB)
-- For Browsers & Node.js
+- One source of truth for all your API requests
+- Robust configuration, makes it easier to handle authentication and prevent repetition of parameters
+- Split requests into multiple categories/subcategories
+- Generate Typescript types for your API automatically
+- Generate a simple markdown reference automatically
+- Supports schema from pure JSON 
+- Universal support - works on Browsers & Node.js
+
+& more
 
 
   
 ## Installation
 
-`npm i rested-js`
+`npm i rests`
+
+You should also install it globally in order to easily run the cli.
+
+`npm i rests -g`
 
   
 ## Usage
-
-You start by writing a JSON schema of all your API endpoints. 
-You can split requests into categories and subcategories.
 ```javascript
-import  Rested  from  'rested-js';
+import Rests from 'rests';
 
-const endpoints = {
+const API = Rests({
+	$options: {
+		base: 'https://example.com'
+	},
 	user:{
 		login:{
-			path:  '/user/login',
-			method:  'POST',
+			path: '/user/login',
+			method: 'POST',
 			params:{
 				username:{
-					required:  true,
+					required: true,
+					type: "string",
+					help: "A valid username is required",
+					validate: /\w+/
 				},
 				password: {
 					required:  true,
-					help:  "The password must be at least 8 characters.",
-					validate: (password) => { return  password.length >= 8;}
+					help: "A valid password is required",
+					type: "string",
+					
+					format: (password) => { 
+						if(password.length < 8){
+							throw new Error("The password must be at least 8 characters.");
+						}
+						return password;
+					}
 
 				}
 			}
+		},
+		profile: {
+			$options:{
+				params:{
+					//Set authentication parameters for all requests in this category
+					authorization: {...} 
+				}
+			}
+			info: {
+				...
+			},
+			update: {
+				...
+			}
 		}
 	}
-}
-
-const  api = Rested(api_config,{ base:  'https://example.com'});
-
-api.user.login({username:  'john', password:'short'}).catch((err) => {
-	console.log(err.message); //The password must be at least 8 characters.
 });
 
-api.user.login({username:  'john', password:'wrong_password'})
-.catch((res) => {
-	console.log(res.json.message); //User password is invalid.
-	console.log(res.status); //401
-});
+export default API;
+
 ```
 
-  ##  Real-life Usages
-Some projects using Rested:
+### Then you can call your API like this
+
+```javascript
+import API from './API.js';
+
+API.user.login({
+	username: 'nice',
+	password: 'mypassword'
+})
+.then((res)=>{
+	console.log(res.json);
+	//Successful Response, body automatically parsed.
+})
+.catch((res)=>{
+	console.log(res.json || res.message);
+	//Error Response 
+})
+```
+
+### Example Validation error
+```javascript
+import API from './API.js';
+
+API.user.login({
+	username: 'john', 
+	password: 'tooshort'
+}).catch((err) => {
+	console.log(err.field, err.message); 
+	//Prints: password The password must be at least 8 characters.
+});
+
+```
+### Setting Variables
+You can set default parameter variables for all requests in a category by initializing it with the `set` function. 
+
+```javascript
+const User = new api.user.set({
+	authorization: 'user_auth_token'
+}); 
+```
+
+You can also update the options for a category by using the special `$options` key. 
+```javascript
+const User = new api.user.set({
+	$options: {
+		on_error: (error)=>{
+			if(error?.statusCode == 401){
+				alert("Session has expired");
+			}
+		}
+	}
+}); 
+```
+
+## CLI Usage
+Rests comes with a simple CLI for generating types and API markdown reference.
+
+Generate the types file `./api.d.ts` automatically and watch for changes
+```bash
+> rests ./api.js --types --watch
+```
+
+
+Generate the markdown API refrence
+```bash
+> rests ./api.js --docs
+```
+
+##  Projects using Rests 
+[TikAPI](https://tikapi.io) is using Rests:
 
 - https://github.com/tikapi-io/tiktok-api
 
-## Quick  Documentaion
 
-### Schema
+
+## Schema Reference
 
 #### Categories
  An API category is an object consisting of [Endpoint Object](#endpoint-object)s or subcategories.
-A category can also contain special keys:
-  - **`$options`**: Set options for this category, same object as  [Gloabl Options](#global-options)
-  - **`$help`**:  A  description used for documentation generation 
+A category can also contain these special keys:
+  - **`$options`**: Options for this category and it's subcategories, overriding other options. See [Options](#options)
+  - **`$help`**:  A  description of the category.
 
 #### Endpoint Object
-  - **`method`**: The request method ,GET,POST etc.
-  - **`path`**: The request path or full URL, which can also contain named parameters,  check [exmaple](#another-example) below. 
+ - **`path`**: The request path or full URL, which can also contain named parameters,  check [exmaple](#another-example) below. 
+  - **`method`**: The request method, GET,POST etc. *(default: GET)*
   - **`enctype`**: The body encode type for \*only for *requests that have body* parameters:
-	 - **`form`**` (multipart/form-data)` *(default)*
-	 - **`url`**` (application/x-www-form-urlencoded)`
-	 - **`json`**` (application/json)`
-	 - **`text`**` (text/plain)`
+	 - **`json`**` (application/json)` *(default)*
+	 - **`form`**` (multipart/form-data)` 
+	 - **`urlencode`**` (application/x-www-form-urlencoded)`
   - **`params`**: An object consisting of [Params Object](#params-object)s.
-  - **`response`**: A hook function for modifying the response.
-  - **`request`**: A hook function for modifying the request.
-  - **`help`**: A description used for documantaion generation
+  - **`help`**: A description of this endpoint
   - **`example_response`**: Example response used for documentation generation
+  - **`on_success`**: See [Options](#options) 
+  - **`on_error`**: See [Options](#options)
+  - **`on_request`**: See [Options](#options)
+ 
 
 #### Params Object
- - **`name`**: By default the param name is the Param object key. 
- - **`required`**: If this param is required or not.
- - **`format`**: A function to format the parameter value.
- - **`validate`**: Validate the param values, it can be:
-     - A Regular expression string.
-     - A function, that returns a boolean.
+ - **`name`**: The parameter HTTP name, this defaults to the object key name.
+ - **`required`**: `boolean` *(default: false)*.
+ - **`help`**: A helpful message to throw if the parameter is invalid.
+ - **`type`**: Supported types:
+     - **`"string"`** 
+     - **`"number"`** 
+     - **`"array"`** 
+     - **`"object"`** 
+     - **`"boolean"`** 
+     - **`"any"`** *(default)*
+
+ - **`format`**: A function to format the parameter value, or throw an error if it's invalid.
+ - **`validate`**: Regex validation.
  - **`in`**:  Array of valid allowed values
- - **`help`** : An error message to throw if param is not valid, or required.
- - **`default`**: A default value for this param.
- - **`location`**: The location where this parameter will be in http request fields, it can be:
-     - **`body`** the param will be encoded in body as form data *(default for POST request)*
-     - **`query`** the param will be URL encoded in URL query *(default for GET request)*
-     - **`headers`** the param will be set in request headers
-     - **`path`** the param will be set in request path, you must declare the named parameters in   path. 
+ - **`default`**: A default value.
+ - **`location`**: The location where this parameter will be in the HTTP request fields:
+     - **`body`** the param will be included in request body *(default for POST request)*
+     - **`query`** the param will be URL encoded in request URL query *(default for GET request)*
+     - **`headers`** the param will be included in request headers
+     - **`path`** the param will be included in request path
+       - Note: You must also declare the named parameter key in the Endpoint path like `/get/{key}`. 
   - **``example``** : Example values used for documentation generation
 
-### Global Options
-This is the global options you set when you initalize Rested, these options can be overridden by Category options.
+###  Options
+The options object can be defined in every category using the special `$options` key.
 
-`Rested(endpoints,global_options)`
-  - **`base`**: The base Origin for all endpoints, will be prepended to each request path, default is empty.
-  - **`headers`**:  Append Headers to all requests
-  - **`values`**: An object of `{param_key : param_value}`, useful for setting default values for all categories and endpoints.
-   - **`sender`**: Use a custom function to send request -> `custom_fetch(url, options, Rested_options, response_middleware?)`
-   - **`request_middleware`**:  Global hook pre-request function
-   - **`response_middleware`**: Global hook on response function
-  - **`fetch_parse`**: Parse Fetch Response (await JSON body\await body text) *(default true)*
-  - **`fetch_error_handler`**:  Function to handle fetch errors
-  - **`fetch_agent`**: You can use this option to set proxy if you're using node-fetch. 
+`Rested(endpoints, options?)`
+  - **`base`**: This will be prepended before each requests path. (e.g `https://example.com`)
+  - **`headers`**: Key-value object of headers to include in all requests
+  - **`params`**: Params to include in all requests
+  - **`values`**: Key-value object store to set default values for all parameters
+  - **`on_request`**: A global hook function that is called before each request. Accepts an object of `{url, options}`.
+	
+	To modify the request:
+	```javascript 
+	return {url, options}
+	``` 
+	
+	To prevent the request from sending:
+	```javascript 
+	return false
+	```
 
-
-## Advanced Example
-
-In this example we declare a user category and set it's options with the special `$options` key.
-We also declare a `information` endpoint which contains `path` parameters.
-```javascript
-import Rested from 'rested-js';
-
-const endpoints = {
-	user:{
-		//This $options: A special key which overrides Global Options for this category and it's subcategories
-		$options:{
-			base: 'https://example.com/login'
-		},
-		
-		profile:{
-			information:{
-				path: '/profile/:id',
-				method: 'GET',
-				params:{
-					id:{
-						required: true,
-						help: "The user ID is required.",
-						validate: "^[0-9]+$",
-						location: "path"
-					},
-					key:{
-						name: 'Authorization',
-						required: true,
-						help: "The user authorization token is required.",
-						validate: "^Bearer (.*?)$",
-						location: "headers"
-					}
-				}
-			},
-			edit: {...} //Other Endpoint/Subcategories for this category
-		}		   
-	}
-}
-const api = Rested(api_config);
-```
-#### Setting Variables
-You can set enviroment variables for a category by initializing it with `set` function. 
-```javascript
-const User = new api.user.set({
-	authorization: 'default_auth_token'
-}); 
-
-User.info({id: 1}).then((res) => {
-	console.log(res.json);
-});
-```
-
-
-### Documentation Generator
-You can generate a Markdown reference of the API, just like this:
-
-```javascript
-api.$docs({
-	output: "API.md",
-});
-```
-
-  
-### Responses
-The response of request is parsed based when `fetch_parse` option is true, returning an object like this:
-```javascript
-{
-	status: 200,
-	statusText: 'OK',
-	headers: {...},
-	json: {'message': 'success'},
-}	
-```
-Depending on the content type, you can get the body as `text` or `json`.
+  - **`on_success`**: A hook function that is called on successful response, you can also modify and return a different response. Accepts `(response, request)`.
+  - **`on_error`**: A hook function that is called on errors. Accepts `(error_response, request)`. You can also return a new error like this:
+	```javascript
+	return Promise.reject(CustomErrorResponse)
+	```
+  - **`fetch_agent`**: You can use this option to configure proxy if you're using node-fetch. 
