@@ -201,24 +201,21 @@ interface ErrorConstructor {
 declare var Error: ErrorConstructor;
 
 
-const fetchAPI = (typeof window !== 'undefined')  ?  window?.fetch : require("node-fetch"),
-	formAPI = (typeof window !== 'undefined') ?  window?.FormData : require("form-data"),
-	fsAPI = (typeof window !== 'undefined') ? undefined : require("fs");
-
-if(!fetchAPI) {
-	throw new Error("Fetch API is not installed. If you are using Node please run `npm install node-fetch`");
-}
-if(!formAPI) {
-	throw new Error("FormData is not installed. If you are using Node please run `npm install form-data`");
-}
-
 function Rests(
 		endpoints: Schema, 
 		options?: Options,
 	){
 	
-	const [fetch, FormData, fs] = [fetchAPI, formAPI, fsAPI];
+	const fetch = (typeof window !== 'undefined')  ?  window?.fetch : require("node-fetch"),
+		FormData = (typeof window !== 'undefined') ?  window?.FormData : require("form-data");
 
+	if(!fetch) {
+		throw new Error("Fetch API is not installed. If you are using Node please run `npm install node-fetch`");
+	}
+
+	if(!FormData) {
+		throw new Error("FormData is not installed. If you are using Node please run `npm install form-data`");
+	}
 	
 	let global_options: Options = {
 		base: "",

@@ -1,6 +1,6 @@
 {
   "name": "rests",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Easily generate API client's SDK — organize and simplify API Requests.",
   "main": "./lib/index.js",
   "bin": {
@@ -46,11 +46,9 @@
     "terser": "^5.14.1",
     "typescript": "^4.7.3"
   },
-  "peerDependencies": {
+  "dependencies": {
+    "getarg": "0.0.2",
     "form-data": "^3.0.0",
     "node-fetch": "^2.6.1"
-  },
-  "dependencies": {
-    "getarg": "0.0.2"
   }
 }
