@@ -1,5 +1,6 @@
 *
 !lib/*
+!lib/cli/*
 !typings/**/*
 !package.json
 !README.md
