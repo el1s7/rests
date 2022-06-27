@@ -1,6 +1,6 @@
 {
   "name": "rests",
-  "version": "1.0.21",
+  "version": "1.0.3",
   "description": "Easily generate API client's SDK — organize and simplify API Requests.",
   "main": "./lib/index.js",
   "bin": {
@@ -10,7 +10,7 @@
     "node": ">=12.0.0"
   },
   "scripts": {
-    "prepublish": "npm run build && npm run tests && git add . && git commit -am \"publish v%npm_package_version%\" && git push",
+    "prepublish": "npm run build && git add . && git commit -am \"publish v%npm_package_version%\" && git push",
     "tests": "mocha",
     "build": "tsc && node after_build.js && npm run tests",
     "cli": "node ./lib/cli/cli.js",
