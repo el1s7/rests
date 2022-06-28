@@ -940,18 +940,6 @@ function Rests(
 	return traverse(rootCategory, endpoints, {});
 }
 
-let x: Options = {
-	'$other': {
-		'openapi':{
-			'fields': 'test',
-			
-		},
-		'nmi':{
-			'test': 'ss'
-		}
-	},
-}
-
 export default Rests;
 
 module.exports = Rests;
