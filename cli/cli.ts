@@ -108,8 +108,11 @@ const main = async () =>{
 			type: "boolean",
 			default: true
 		},
+		use_cache:{
+			help: "OpenAPI: Use cached responses/request samples",
+		},
 		examples:{
-			help: "Types: Don't include examples in JSDoc",
+			help: "Include examples in documentation and comments",
 			type: "boolean",
 			default: true
 		},
@@ -230,7 +233,9 @@ const main = async () =>{
 			output: args.print ? false : openAPIOut,
 			template: args.openapi_template,
 			responses: args.responses,
-			codeSamples: args.code_samples
+			codeSamples: args.code_samples,
+			useCache: args.use_cache,
+			includeExamples: args.examples
 		});
 
 		console.info("[+] " + (new Date()).toLocaleTimeString() + " Open API schema has been generated.");

@@ -641,7 +641,7 @@ function Rests(
 				var current_param_value = params[param_name],
 					options_param_value = currentOptions?.values?.[param_name],
 					default_param_value = param.default,
-					example_param_value = params?.['$sandbox'] ? param.example : undefined;
+					example_param_value = (params?.['$sandbox'] || currentOptions?.values?.['$sandbox']) ? param.example : undefined;
 
 				var param_value = getOne(
 					current_param_value, 

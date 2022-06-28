@@ -6,8 +6,11 @@
 .pnp.js
 package-lock.json
 
-/lib
+/lib/cli
+/lib/index.js
+/lib/index.d.ts
 
+types.png
 
 # testing
 /coverage

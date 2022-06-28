@@ -89,10 +89,6 @@ const mergeOptions = (
 					...(firstOptions?.$other?.openapi?.fields?.parameters || []),
 					...(secondOptions?.$other?.openapi?.fields?.parameters || []),
 				],
-				security: [
-					...(firstOptions?.$other?.openapi?.fields?.security || []),
-					...(secondOptions?.$other?.openapi?.fields?.security || []),
-				],
 				responses: {
 					...firstOptions?.$other?.openapi?.fields?.responses,
 					...secondOptions?.$other?.openapi?.fields?.responses,
