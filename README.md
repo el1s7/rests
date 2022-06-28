@@ -35,6 +35,7 @@ fetch("https://example.com/login",{
 .then(data)=> (console.log("Finally the response")));
 ```
 
+
 ## Features
 
 - One source of truth for all your API requests
@@ -51,7 +52,8 @@ fetch("https://example.com/login",{
 & more
 
 
-  
+
+
 ## Installation
 
 `npm i rests`
@@ -187,6 +189,11 @@ Generate the markdown API refrence
 ```bash
 > rests ./api.js --docs
 ```
+
+## Rests with automatic typings in action
+<img src='https://i.imgur.com/nQGSyaf.png'>
+
+
 
 ##  Projects using Rests 
 [TikAPI](https://tikapi.io) is using Rests:
