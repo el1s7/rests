@@ -109,6 +109,10 @@ interface Params {
 		/** Array validation */
 		in?: any[],
 
+		max?: number,
+
+		min?: number,
+
 		/** Default value */
 		default?: any,
 
@@ -120,6 +124,8 @@ interface Params {
 
 interface Options extends Hooks {
 	base?: string,
+
+	sandboxBase?: string,
 
 	headers?: any,
 
