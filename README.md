@@ -73,7 +73,7 @@ import Rests from 'rests';
 ### With CommonJS
 Import it like this to get the Types &  Intellisense suggestions on CommonJS
 ```javascript
-const rests = require("rests").default
+const Rests = require("rests").default;
 ```
 
 
