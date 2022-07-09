@@ -63,6 +63,20 @@ You should also install it globally in order to easily run the cli.
 `npm i rests -g`
 
   
+## Import
+
+Recommended
+```javascript
+import Rests from 'rests';
+```
+
+### With CommonJS
+Import it like this to get the Types &  Intellisense suggestions on CommonJS
+```javascript
+const rests = require("rests").default
+```
+
+
 ## Usage
 ```javascript
 import Rests from 'rests';

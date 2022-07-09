@@ -940,6 +940,8 @@ function Rests(
 	return traverse(rootCategory, endpoints, {});
 }
 
+Rests.default = Rests;
+
 export default Rests;
 
 module.exports = Rests;

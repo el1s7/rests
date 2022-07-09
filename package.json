@@ -1,6 +1,6 @@
 {
   "name": "rests",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Easily generate API client's SDK — organize and simplify API Requests.",
   "main": "./lib/index.js",
   "bin": {
