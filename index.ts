@@ -533,11 +533,19 @@ function Rests(
 				
 				try {
 					var contentType = res.headers.get('Content-Type') || '';
+
+					let corsType: any;
+					try{
+						corsType = res.type
+					}catch(err){
+						//prevent errors on cloudflare workers 
+					}
+
 					let formattedResponse: ResponseObject = {
 						statusCode: res.status,
 						statusText: res.statusText,
 						headers: res.headers,
-						type: res.type,
+						type: corsType,
 						ok: res.ok
 					}
 					
