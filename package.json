@@ -10,7 +10,8 @@
     "node": ">=12.0.0"
   },
   "scripts": {
-    "prepublishOnly": "npm run build && git add . && git commit -am \"publish v%npm_package_version%\" && git push",
+    "prepublishOnly": "npm run build",
+    "push": "git add . && git commit -am \"publish v%npm_package_version%\" && git push",
     "tests": "mocha",
     "build": "tsc && node after_build.js && npm run tests",
     "cli": "node ./lib/cli/cli.js",
