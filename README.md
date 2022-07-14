@@ -215,6 +215,11 @@ Generate the markdown API refrence
 - https://github.com/tikapi-io/tiktok-api
 
 
+## TODO
+- [ ] Support `cookie` as parameter location
+- [ ] Support raw body requests without parameters (e.g `API.user(rawBodyBytes)`)
+- [ ] Feature: Store cookie jar and persist session cookies over requests (same as python requests lbirary)
+
 
 ## Schema Reference
 
