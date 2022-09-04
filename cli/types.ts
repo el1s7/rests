@@ -106,7 +106,7 @@ ${padding} */`);
 
 				}).filter(p => p).join('\n');
 
-				let endpointParamsType = parseEndpointParams ? `params: {${parseEndpointParams}\n} | FormData`: '';
+				let endpointParamsType = parseEndpointParams ? `params?: {${parseEndpointParams}\n} | FormData`: '';
 
 				helpMessage = endpoint.help || `${capitalize(category)} - ${(endpoint?.method || 'get').toUpperCase()} request`;
 

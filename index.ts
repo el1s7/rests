@@ -553,10 +553,11 @@ function Rests(
 						'application\/json': 'json',
 						'text\/plain': 'text',
 						'(multipart\/form\-data|application\/x\-www\-form\-urlencoded)': 'formData',
-						'blob': 'blob'
+						'blob': 'blob',
+						'text': 'text'
 					}
 					
-					let currentResponseType = Object.keys(responseTypes).find((responseType) => (new RegExp(responseType)).test(contentType)) || "blob";
+					let currentResponseType = Object.keys(responseTypes).find((responseType) => (new RegExp(responseType)).test(contentType)) || "text";
 
 					formattedResponse[responseTypes[currentResponseType]] = await res[responseTypes[currentResponseType]]();
 					
