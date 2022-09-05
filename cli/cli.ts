@@ -14,8 +14,10 @@ const path = require("path");
 const Rests = require('../index.js');
 const getArgs = require('getarg');
 
+const ts = require("typescript");
+
 const { capitalize, dent, copyOptions, parseSet,
-    mergeOptions, get, escapeRegExp, isInitializable, formatModulePath} = require("./helpers");
+    mergeOptions, get, escapeRegExp, isInitializable, formatModulePath, tsToJs} = require("./helpers");
 
 import {
 	ResponseObject, paramOptions, Params, 
@@ -51,6 +53,9 @@ const getModule = (name: string) => {
 	return false;
 }
 
+
+
+
 const privateModule = getModule('rests-private');
 
 const generatePython = privateModule ? privateModule.generatePython : privateMessage;
@@ -61,7 +66,7 @@ const main = async () =>{
 	const usage = dent(`\u001b[0m
 		\u001b[94mUsage:\u001b[0m rests ./api.js --types --watch
 		
-		The schema file can be a .js/.jsx file that has a default export of a Rests instance 'API' \u001b[33m(i.e export default API)\u001b[0m, or it can be a json file.\u001b[94m
+		The schema file can be a .js/.jsm/.ts file that has a default export of a Rests instance 'API' \u001b[33m(i.e export default API)\u001b[0m, or it can be a json file.\u001b[94m
 		`, 2);
 	
 	const args: any = getArgs({
@@ -135,11 +140,19 @@ const main = async () =>{
 	//@ts-ignore
 	const isJSON = /\.json$/.test(schemaFile),
 		isJS = /\.(m?jsx?|tsx?)$/.test(schemaFile),
-		parseFile = isJS ? 
-		(await import(schemaImportPath)).default :
-		(
-			isJSON ? JSON.parse(fs.readFileSync(schemaFile, "utf-8")) : null
-		);
+		isTS = /\.tsx?$/.test(schemaFile) && tsToJs(schemaFile),
+		tsImportPath = formatModulePath(isTS),
+		importFile = isJS ? 
+			(
+				isTS 
+				? (await import(tsImportPath)).default
+				: (await import(schemaImportPath)).default
+			)
+			:
+			(
+				isJSON ? JSON.parse(fs.readFileSync(schemaFile, "utf-8")) : null
+			),
+		parseFile = importFile.__esModule && importFile.default ? importFile.default : importFile;
 
 	if(isJS && !parseFile){
 		console.error("We couldn't import the Rests instance. Make sure you have exported it correctly, i.e \u001b[33mexport default API\u001b[0m");
@@ -265,15 +278,22 @@ const main = async () =>{
 	}
 
 	if(args.watch){
-		
+		const watchFile = isTS || schemaFile;
+
+		if(isTS){
+			(async function watchTs() {
+				tsToJs(schemaFile,true);
+			})();
+		}
+
 		console.info("[*] Watching for changes..");
 
-		let lastStats = (await fs.promises.stat(schemaFile));
+		let lastStats = (await fs.promises.stat(watchFile));
 
 		while(true){
 			await new Promise((res,rej)=> setTimeout(res.bind(null, true), 1000));
 
-			let currentStats = (await fs.promises.stat(schemaFile));
+			let currentStats = (await fs.promises.stat(watchFile));
 
 			if(currentStats.mtimeMs !== lastStats.mtimeMs){
 				

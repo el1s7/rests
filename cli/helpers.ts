@@ -2,6 +2,11 @@
 const fs = require("fs");
 const path = require("path");
 const url = require('url');
+const ts = require("typescript");
+const os = require("os");
+const crypto = require("crypto");
+const cp = require("child_process");
+const glob = require("glob");
 
 import {
    newCategoryValues, Options, Schema
@@ -110,6 +115,54 @@ const escapeRegExp = (string: string) => {
 	return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+const tsCompile = function(source: string, options: any = null): string {
+    // Default options -- you could also perform a merge, or use the project tsconfig.json
+    if (null === options) {
+        options = { compilerOptions: { 
+			module: 'CommonJS',
+			target: 'es6',
+			esModuleInterop: true
+		}};
+    }
+    return ts.transpileModule(source, options).outputText;
+}
+
+const tsToJs = function(file: string, watch=false) {
+
+	let fileName = path.basename(file);
+	let fileDir = path.dirname(file);
+	
+	let outFileName = fileName.replace(/\.tsx?$/,'.js');
+
+	let outPath = path.join(fileDir, "/.restscache/");
+	
+	cp[watch ? 'exec' : 'execSync'](`npx tsc ${fileName} --outDir .restscache` + (watch ? ' --watch' : ''), {cwd: fileDir});
+	
+	if(fs.existsSync(path.join(fileDir, "package.json"))  ){
+		let outFile = path.join(outPath, outFileName);
+		return outFile;
+	}
+
+	let filePattern = `**${path.basename(fileDir)}/${outFileName}`
+	let outFiles: string[] = glob.sync(filePattern, {cwd: outPath});
+
+	let outFile = outFiles.find((v)=>(
+		!v.includes("node_modules")
+	));
+
+	if(!outFile){
+		let checkOutRoot = path.join(outPath, outFileName);
+		if(fs.existsSync(checkOutRoot)){
+			return checkOutRoot;
+		}
+		if(watch){
+			return false;
+		}
+		throw new Error(`Couldn't find the compiled file path for ${fileName}`);
+	}
+
+	return outFile;
+}
 
 
 const isInitializable = (category: Schema) => {
@@ -122,5 +175,5 @@ const isInitializable = (category: Schema) => {
 module.exports = {
     capitalize, dent, copyOptions, parseSet,
     mergeOptions, get, escapeRegExp, isInitializable,
-	formatModulePath
+	formatModulePath, tsCompile, tsToJs
 }

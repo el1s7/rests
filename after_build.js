@@ -17,6 +17,7 @@ const run = async()=>{
     fs.writeFileSync(
         './lib/cli/cli.js', 
         cli
+        .replace(/require\(tsImportPath\)/g, 'import\(tsImportPath\)')
         .replace(/require\(schemaImportPath\)/g, 'import\(schemaImportPath\)')
         .replace(/\{restsVersion\}/g, version),
         {
