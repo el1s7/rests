@@ -320,7 +320,7 @@ export type newCategoryValues = {
 * A object consisting of Endpoint Objects or nested subcategories. 
 */
 export interface Schema extends CategorySchema {
-	[name: string]: string | Options | Endpoint | Schema;
+	[name: string]: boolean | number | string | Options | Endpoint | Schema;
 };
 
 /*
