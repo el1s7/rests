@@ -149,7 +149,11 @@ const tsToJs = function(file: string, watch=false) {
 	let outFile = outFiles.find((v)=>(
 		!v.includes("node_modules")
 	));
-
+	
+	if(!outFile.includes(".restscache")){
+		outFile = path.join(outPath, outFile);
+	}
+	
 	if(!outFile){
 		let checkOutRoot = path.join(outPath, outFileName);
 		if(fs.existsSync(checkOutRoot)){

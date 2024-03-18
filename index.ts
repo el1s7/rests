@@ -165,6 +165,12 @@ export interface openAPIOpts {
 	/** Hide this endpoint */
 	hide?: boolean,
 
+	/** Hide parameters from the schema/documentation */
+	hideParams?: string[],
+
+	/** Always show the example values for these parameters in code samples even if they are not required. */
+	showExamplesInCode?: string[],
+
 	/** Neccesary for request code samples */
 	packageName?: string,
 

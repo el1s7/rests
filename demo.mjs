@@ -2,7 +2,7 @@ import Rests from './lib/index.js';
 
 const API = Rests({
 	$options: {
-		base: 'https://httpbin.org'
+		base: 'https://postman-echo.com'
 	},
 	empty:{
 		help: 'Default get without params',
@@ -52,12 +52,12 @@ const API = Rests({
 			},
 			info: {
                 help: 'User info',
-                path: '/anything/user/info'
+                path: '/headers'
 			},
 			about:{
 				me:{
 					help: 'User about',
-					path: '/anything/test/me'
+					path: '/headers'
 				}
 			},
 			update: {

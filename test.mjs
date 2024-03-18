@@ -22,7 +22,7 @@ describe('Rests API Main', function () {
 	it('Should allow endpoints without params & request method', async function () {
 		let res = await API.empty()
 
-		assert.strictEqual(res.json.url, 'https://httpbin.org/get');
+		assert.strictEqual(res.json.url, 'https://postman-echo.com/get');
 	});
 
 	const profile = new API.user.profile({
@@ -57,7 +57,7 @@ describe('Rests API Main', function () {
 	it('Subcategories should inherit updated values', async function () {
 		let res = await profile.about.me();
 
-		assert.strictEqual(res.json.headers?.['X-Auth'], 'tokentest');
+		assert.strictEqual(res.json.headers?.['x-auth'], 'tokentest');
 	});
 
 	it('Subcategories should inherit updated options', async function () {
@@ -65,7 +65,7 @@ describe('Rests API Main', function () {
 			$options: {
 				params: {
 					secure: {
-						name: 'X-Secure',
+						name: 'x-secure',
 						required: true,
 						location: 'headers',
 					}
@@ -79,8 +79,8 @@ describe('Rests API Main', function () {
 			secure: 'yes'
 		});
 
-		assert.strictEqual(res.json.headers?.['X-Auth'], 'tokencool');
-		assert.strictEqual(res.json.headers?.['X-Secure'], 'yes');
+		assert.strictEqual(res.json.headers?.['x-auth'], 'tokencool');
+		assert.strictEqual(res.json.headers?.['x-secure'], 'yes');
 	});
 	
 	
