@@ -15,9 +15,10 @@ const Rests = require('../index.js');
 const getArgs = require('getarg');
 
 const ts = require("typescript");
+const package_info = require("../../package.json");
 
 const { capitalize, dent, copyOptions, parseSet,
-    mergeOptions, get, escapeRegExp, isInitializable, formatModulePath, tsToJs} = require("./helpers");
+	mergeOptions, get, escapeRegExp, isInitializable, formatModulePath, tsToJs} = require("./helpers");
 
 import {
 	ResponseObject, paramOptions, Params, 
@@ -63,8 +64,12 @@ const generateOpen = privateModule ? privateModule.generateOpen : privateMessage
 
 const main = async () =>{
 
-	const usage = dent(`\u001b[0m
-		\u001b[94mUsage:\u001b[0m rests ./api.js --types --watch
+	const ascii_art = decodeURIComponent("%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20_%20%20%20%20%20%20%20%0A%20_%20__%20___%20%20___%7C%20%7C_%20___%20%0A%7C%20%27__%2F%20_%20%5C%2F%20__%7C%20__%2F%20__%7C%0A%7C%20%7C%20%7C%20%20__%2F%5C__%20%5C%20%7C_%5C__%20%5C%0A%7C_%7C%20%20%5C___%7C%7C___%2F%5C__%7C___%2F%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%0A");
+
+	const usage = dent(`${ascii_art}
+		V.${package_info.version} by ${package_info.author}
+
+		\u001b[0m\u001b[94mUsage:\u001b[0m rests ./api.js --types --watch
 		
 		The schema file can be a .js/.jsm/.ts file that has a default export of a Rests instance 'API' \u001b[33m(i.e export default API)\u001b[0m, or it can be a json file.\u001b[94m
 		`, 2);
